@@ -2,8 +2,6 @@
 title: "My website and data analysis portfolio"
 ---
 
-**Feel free to change the text below any way you want 😁!**
-
 ## Welcome 👋
 
 Welcome to **my website** and *data analysis portfolio.*
