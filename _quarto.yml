@@ -17,7 +17,7 @@ website:
         href: https://github.com/LiangLai/Lianglai-portfolio   
 format:
   html:
-    theme: pluse
+    theme: superhero
     highlight: zenburn
     css: styles.css
     toc: FALSE
