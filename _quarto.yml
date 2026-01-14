@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 website:
-  title: "YOURNAME Data Analysis Portfolio"
+  title: "LiangLai Data Analysis Portfolio"
   navbar:
     left:
       - text: "About Me"
@@ -14,7 +14,7 @@ website:
             file: starter-analysis-exercise/starter-analysis-exercise.qmd
     right:
       - icon: github 
-        href: URL-TO-THIS-REPOSITORY-HERE        
+        href: https://github.com/LiangLai/Lianglai-portfolio   
 format:
   html:
     theme: cosmo
