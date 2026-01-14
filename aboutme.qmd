@@ -27,4 +27,4 @@ One dataset I have recently been working with is the **Health and Retirement Stu
 I have been using HRS in recent research related to **dementia**, which has made me particularly familiar with the structure and variables of the dataset. I find HRS especially valuable because it provides rich longitudinal information on health, socioeconomic status, and aging, allowing for applied statistical analyses that are directly relevant to public health and health policy questions.
 
 More information about the dataset can be found here:  
-👉 https://hrs.isr.umich.edu
+[https://hrs.isr.umich.edu](https://hrs.isr.umich.edu)
