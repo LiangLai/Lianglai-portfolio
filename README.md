@@ -1,1 +1,4 @@
-# My website and data analysis portfolio
+# My MADA Portfolio
+
+This repository contains my course portfolio website for
+Modern Applied Data Analysis (MADA).
