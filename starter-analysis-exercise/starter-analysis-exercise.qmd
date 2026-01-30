@@ -134,3 +134,61 @@ summary(fit2)
 
 From the result in fit1, in 2000, the infant mortality rate in African countries was significantly negatively correlated with life expectancy (p < 0.001). For every 1 unit increase in the infant mortality rate, the life expectancy was expected to decrease by approximately 0.19 years. 
 From the result in fit2, in 2000, there was no significant correlation between the population size of African countries and their life expectancy (p = 0.616). Changes in population size were unable to effectively predict the level of life expectancy in these countries. In contrast, infant mortality rate was a more crucial predictive factor.
+
+
+## Additional Data Exploration  
+*This section contributed by Saraa Al Jawad*
+
+In this section we explore another dataset following similar steps above:
+
+```{r}
+library(dslabs)
+library(dplyr)
+library(ggplot2)
+
+data(heights)
+
+# Explore dataset structure
+
+glimpse(heights)
+summary(heights)
+
+
+heights_clean <- heights %>%
+filter(!is.na(height), !is.na(sex))
+
+# Quick check
+
+table(heights_clean$sex)
+
+
+ggplot(heights_clean, aes(x = height)) +
+geom_histogram(bins = 25) +
+facet_wrap(~ sex) +
+labs(
+title = "Height distribution by sex",
+x = "Height (inches)",
+y = "Count"
+)
+
+
+ggplot(heights_clean, aes(x = sex, y = height)) +
+geom_boxplot() +
+labs(
+title = "Height by sex",
+x = "Sex",
+y = "Height (inches)"
+)
+
+```
+
+# simple statistical model (linear model)
+
+
+```{r}
+fit_height <- lm(height ~ sex, data = heights_clean)
+summary(fit_height)
+
+```
+
+The linear model shows that sex is a statistically significant predictor of height (p < 0.001). On average, males are estimated to be approximately 4.4 inches taller than females in this dataset. 
