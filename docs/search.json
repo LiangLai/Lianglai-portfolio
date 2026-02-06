@@ -14,27 +14,6 @@
     "text": "Additional Data Exploration\nThis section contributed by Saraa Al Jawad\nIn this section we explore another dataset following similar steps above:\n\nlibrary(dslabs)\nlibrary(dplyr)\nlibrary(ggplot2)\n\nWarning: package 'ggplot2' was built under R version 4.5.2\n\ndata(heights)\n\n# Explore dataset structure\n\nglimpse(heights)\n\nRows: 1,050\nColumns: 2\n$ sex    &lt;fct&gt; Male, Male, Male, Male, Male, Female, Female, Female, Female, M…\n$ height &lt;dbl&gt; 75, 70, 68, 74, 61, 65, 66, 62, 66, 67, 72, 72, 69, 68, 69, 66,…\n\nsummary(heights)\n\n     sex          height     \n Female:238   Min.   :50.00  \n Male  :812   1st Qu.:66.00  \n              Median :68.50  \n              Mean   :68.32  \n              3rd Qu.:71.00  \n              Max.   :82.68  \n\nheights_clean &lt;- heights %&gt;%\nfilter(!is.na(height), !is.na(sex))\n\n# Quick check\n\ntable(heights_clean$sex)\n\n\nFemale   Male \n   238    812 \n\nggplot(heights_clean, aes(x = height)) +\ngeom_histogram(bins = 25) +\nfacet_wrap(~ sex) +\nlabs(\ntitle = \"Height distribution by sex\",\nx = \"Height (inches)\",\ny = \"Count\"\n)\n\n\n\n\n\n\n\nggplot(heights_clean, aes(x = sex, y = height)) +\ngeom_boxplot() +\nlabs(\ntitle = \"Height by sex\",\nx = \"Sex\",\ny = \"Height (inches)\"\n)"
   },
   {
-    "objectID": "aboutme.html",
-    "href": "aboutme.html",
-    "title": "About me",
-    "section": "",
-    "text": "Background and Training\nI am a first-year PhD student in Health Services Research, with a background in statistics. My academic training has provided me with experience in quantitative methods and data analysis, and I am particularly interested in applying these tools to real-world public health and policy questions.\n\n\nResearch Interests\nMy research interests focus on public health, healthcare access, and health policy. I am especially interested in understanding how social, economic, and policy environments shape health outcomes and contribute to disparities across populations.\n\n\nData Analysis and Programming Experience\nI have previously used R and Python for data analysis and visualization. While I am still building confidence and fluency in these tools, I am comfortable working with data and eager to continue improving my programming and analytical skills.\n\n\nGoals for This Course\nThrough this course, I hope to strengthen my ability to conduct reproducible data analyses, gain more experience with modern data science tools, and further improve my proficiency in R for applied data analysis.\n\n\nA Dataset I Have Been Working With\nOne dataset I have recently been working with is the Health and Retirement Study (HRS), a nationally representative longitudinal survey of older adults in the United States.\nI have been using HRS in recent research related to dementia, which has made me particularly familiar with the structure and variables of the dataset. I find HRS especially valuable because it provides rich longitudinal information on health, socioeconomic status, and aging, allowing for applied statistical analyses that are directly relevant to public health and health policy questions.\nMore information about the dataset can be found here:\nhttps://hrs.isr.umich.edu"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "My website and data analysis portfolio",
-    "section": "",
-    "text": "Welcome to my website and data analysis portfolio.\n\nPlease use the Menu Bar above to look around.\nHave fun!"
-  },
-  {
-    "objectID": "index.html#welcome",
-    "href": "index.html#welcome",
-    "title": "My website and data analysis portfolio",
-    "section": "",
-    "text": "Welcome to my website and data analysis portfolio.\n\nPlease use the Menu Bar above to look around.\nHave fun!"
-  },
-  {
     "objectID": "data-exercise/data-exercise.html",
     "href": "data-exercise/data-exercise.html",
     "title": "Data Exercise(Week4)",
@@ -89,5 +68,26 @@
     "title": "Data Exercise(Week4)",
     "section": "Model 2: logistic regression + bmi^2",
     "text": "Model 2: logistic regression + bmi^2\n\nm2 &lt;- glm(\n  dementia ~ age + depression_history + education_years + physical_activity +\n    diabetes + hypertension + BMI + I(BMI^2),\n  data = synthetic_data,\n  family = binomial()\n)\nsummary(m2)\n\n\nCall:\nglm(formula = dementia ~ age + depression_history + education_years + \n    physical_activity + diabetes + hypertension + BMI + I(BMI^2), \n    family = binomial(), data = synthetic_data)\n\nCoefficients:\n                     Estimate Std. Error z value Pr(&gt;|z|)    \n(Intercept)         11.750746   2.189750   5.366 8.04e-08 ***\nage                  0.090974   0.013597   6.691 2.22e-11 ***\ndepression_history   1.161128   0.272111   4.267 1.98e-05 ***\neducation_years     -0.051408   0.041960  -1.225 0.220511    \nphysical_activity.L -0.289208   0.244793  -1.181 0.237427    \nphysical_activity.Q  0.128675   0.209978   0.613 0.540007    \ndiabetes             0.980283   0.285237   3.437 0.000589 ***\nhypertension         0.847205   0.250683   3.380 0.000726 ***\nBMI                 -1.571344   0.166968  -9.411  &lt; 2e-16 ***\nI(BMI^2)             0.029032   0.003036   9.563  &lt; 2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\n(Dispersion parameter for binomial family taken to be 1)\n\n    Null deviance: 713.69  on 999  degrees of freedom\nResidual deviance: 494.10  on 990  degrees of freedom\nAIC: 514.1\n\nNumber of Fisher Scoring iterations: 6\n\nexp(coef(m2))\n\n        (Intercept)                 age  depression_history     education_years \n       1.268482e+05        1.095240e+00        3.193533e+00        9.498907e-01 \nphysical_activity.L physical_activity.Q            diabetes        hypertension \n       7.488562e-01        1.137320e+00        2.665210e+00        2.333117e+00 \n                BMI            I(BMI^2) \n       2.077657e-01        1.029458e+00 \n\n# check model \nAIC(m1, m2)\n\n   df      AIC\nm1  9 616.1506\nm2 10 514.0980"
+  },
+  {
+    "objectID": "aboutme.html",
+    "href": "aboutme.html",
+    "title": "About me",
+    "section": "",
+    "text": "Background and Training\nI am a first-year PhD student in Health Services Research, with a background in statistics. My academic training has provided me with experience in quantitative methods and data analysis, and I am particularly interested in applying these tools to real-world public health and policy questions.\n\n\nResearch Interests\nMy research interests focus on public health, healthcare access, and health policy. I am especially interested in understanding how social, economic, and policy environments shape health outcomes and contribute to disparities across populations.\n\n\nData Analysis and Programming Experience\nI have previously used R and Python for data analysis and visualization. While I am still building confidence and fluency in these tools, I am comfortable working with data and eager to continue improving my programming and analytical skills.\n\n\nGoals for This Course\nThrough this course, I hope to strengthen my ability to conduct reproducible data analyses, gain more experience with modern data science tools, and further improve my proficiency in R for applied data analysis.\n\n\nA Dataset I Have Been Working With\nOne dataset I have recently been working with is the Health and Retirement Study (HRS), a nationally representative longitudinal survey of older adults in the United States.\nI have been using HRS in recent research related to dementia, which has made me particularly familiar with the structure and variables of the dataset. I find HRS especially valuable because it provides rich longitudinal information on health, socioeconomic status, and aging, allowing for applied statistical analyses that are directly relevant to public health and health policy questions.\nMore information about the dataset can be found here:\nhttps://hrs.isr.umich.edu"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "My website and data analysis portfolio",
+    "section": "",
+    "text": "Welcome to my website and data analysis portfolio.\n\nPlease use the Menu Bar above to look around.\nHave fun!"
+  },
+  {
+    "objectID": "index.html#welcome",
+    "href": "index.html#welcome",
+    "title": "My website and data analysis portfolio",
+    "section": "",
+    "text": "Welcome to my website and data analysis portfolio.\n\nPlease use the Menu Bar above to look around.\nHave fun!"
   }
 ]
