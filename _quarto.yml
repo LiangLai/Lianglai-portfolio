@@ -15,7 +15,7 @@ website:
           - text: "READy Exercise"
             file: ready-exercise/ready-exercise.html
           - text: "Data Exercise"
-            file: data-exercise/data-exercise.qmd
+            file: data-exercise/data-exercise.html
     right:
       - icon: github 
         href: https://github.com/LiangLai/Lianglai-portfolio   
