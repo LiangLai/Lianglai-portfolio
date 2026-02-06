@@ -12,7 +12,7 @@ The underlying logic includes:
 3.  Comorbidities (Diabetes/Hypertension): Driven by Age and BMI.
 4.  BMI & Dementia: A U-shaped relationship(both underweight and obese increase risk).
 
-```{r, echo=FALSE, message=FALSE}
+```{r, warning=FALSE}
 # 0) Load required packages
 library(tidyverse)
 library(ggplot2)
@@ -123,7 +123,7 @@ str(synthetic_data)
 
 ## Age distribution 
 From the histogram, it can be seen that the age range is mainly concentrated between 55 and 75.
-```{r}
+```{r Age}
 ggplot(synthetic_data, aes(age)) +
   geom_histogram(bins = 30) +
   labs(title = "Age distribution", x = "Age", y = "Count")
@@ -131,7 +131,7 @@ ggplot(synthetic_data, aes(age)) +
 
 ## BMI distribution
 From the histogram, it can be seen that the BMI range is mainly concentrated between 25 and 30.
-```{r}
+```{r BMI}
 ggplot(synthetic_data, aes(BMI)) +
   geom_histogram(bins = 30) +
   labs(title = "BMI distribution", x = "BMI", y = "Count")
@@ -139,7 +139,7 @@ ggplot(synthetic_data, aes(BMI)) +
 
 ## Age trend with Dementia
 The smooth curve shows the trend of dementia probability increasing with age, which is as expected, as age was deliberately made a significant risk factor in the data generation process.
-```{r}
+```{r Age trend with Dementia}
 ggplot(synthetic_data, aes(x = age, y = dementia)) +
   geom_smooth(method = "loess", color = "blue") + 
   labs(title = "Dementia Risk increases with Age", y = "Probability")
@@ -147,7 +147,7 @@ ggplot(synthetic_data, aes(x = age, y = dementia)) +
 
 ## Check BMI with dementia
 The curve indicates a non-linear relationship between BMI and the risk of dementia. Its shape conforms to the expected U-shaped association, where the risk increases both when BMI is low and when it is high.
-```{r}
+```{r BMI with dementia}
 ggplot(synthetic_data, aes(x = BMI, y = dementia)) +
   geom_smooth(method = "loess") +
   labs(title = "U-shaped BMI relationship with dementia risk", x = "BMI", y = "Probability (loess-smoothed)")
@@ -167,7 +167,7 @@ summary(m1)
 exp(coef(m1))
 ```
 
-## # Model 2: logistic regression + bmi^2
+## Model 2: logistic regression + bmi^2
 ```{r}
 m2 <- glm(
   dementia ~ age + depression_history + education_years + physical_activity +
