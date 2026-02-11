@@ -8,7 +8,7 @@ This dataset contains model-based county-level estimates in GIS-friendly format.
 Source: <https://data.cdc.gov/500-Cities-Places/PLACES-County-Data-GIS-Friendly-Format-2025-releas/i46a-9kgh/about_data>
 
 
-```{r, warning = FALSE}
+```{r, Warning = FALSE}
 ## Load packages
 library(tidyverse)
 library(janitor)
@@ -62,7 +62,7 @@ summary(cdc)
 ```
 
 # Exploratory Analysis
-PLACES is a county-level, wide-format dataset. The exploratory analyses below summarize the distribution of the key categorical variable  and the marginal distributions of the selected continuous measures
+PLACES is a county-level, wide-format dataset. The exploratory analyses below summarize the distribution of the key categorical variable and the marginal distributions of the selected continuous measures.
 ```{r}
 # number of counties by state
 cdc %>%
@@ -79,6 +79,9 @@ ggplot(cdc %>% count(state), aes(x = reorder(state, n), y = n)) +
     y = "Number of counties"
   )
 ```
+
+County representation varies substantially by state. Texas has the largest number of counties by a wide margin, while several smaller states contribute relatively few.
+
 ```{r}
 #  Summary of population 
 skim(cdc$population)
@@ -93,7 +96,7 @@ ggplot(cdc, aes(x = population)) +
     y = "Number of counties"
   )
 ```
-
+County population is right-skewed (min ≈ 81; max ≈ 9,663,345), with the mean (≈ 107,384) much larger than the median (25,800).
 
 ```{r}
 # Summary of Obesity (crude prevalence)
@@ -108,7 +111,7 @@ ggplot(cdc, aes(x = obesity)) +
     y = "Number of counties"
   )
 ```
-
+Adult obesity prevalence is approximately unimodal and fairly symmetric across counties, centered around 38%.
 
 ```{r}
 # Summary of diabetes
@@ -123,7 +126,7 @@ ggplot(cdc, aes(x = diabetes)) +
     y = "Number of counties"
   )
 ```
-
+Diabetes prevalence is centered around 13% (mean ≈ 13.6; median ≈ 13.3) and shows a mild right tail.
 
 ```{r}
 # Summary of smoking
@@ -138,7 +141,7 @@ ggplot(cdc, aes(x = smoking)) +
     y = "Number of counties"
   )
 ```
-
+Current smoking prevalence is concentrated around 15% and is slightly right-skewed.
 
 ```{r}
 # Summary of depression
@@ -153,7 +156,7 @@ ggplot(cdc, aes(x = depression)) +
     y = "Number of counties"
   )
 ```
-
+Depression prevalence is centered around the low-20% range, with most counties roughly between 20% and 26%.
 
 ```{r}
 # Summary of binge drinking 
@@ -169,10 +172,11 @@ ggplot(cdc, aes(x = binge_drinking)) +
   )
 
 ```
-
+Binge drinking prevalence is fairly concentrated around 16%, with a moderate right tail.
 
 ```{r}
 # Bivariate relationship: obesity vs diabetes
+
 ggplot(cdc, aes(x = obesity, y = diabetes)) +
   geom_point(alpha = 0.4) +
   labs(
@@ -181,3 +185,4 @@ ggplot(cdc, aes(x = obesity, y = diabetes)) +
     y = "Diabetes prevalence"
   )
 ```
+A positive relationship is expected, with higher obesity prevalence generally corresponding to higher diabetes prevalence
