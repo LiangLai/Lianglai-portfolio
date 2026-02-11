@@ -15,17 +15,13 @@ library(janitor)
 library(skimr)
 library(readr)
 library(ggplot2)
-library(here)
 library(scales)
+library(here)
 ```
 
 
 ```{r}
 ## load data 
-library(here)
-library(tidyverse)
-library(janitor)
-
 cdc_raw <- read_csv(here("cdcdata-exercise", "PLACES__County_Data_(GIS_Friendly_Format),_2025_release_20260210.csv")) %>%
   clean_names()
 ```
@@ -48,7 +44,6 @@ cdc <- cdc_raw %>%
   )
 
 glimpse(cdc)
-skim(cdc)
 ```
 
 We will drop rows when key variables are missing.
@@ -56,7 +51,7 @@ We will drop rows when key variables are missing.
 # check data
 colSums(is.na(cdc))
 
-# drop rows 
+# drop rows if missing
 cdc <- cdc %>%
   drop_na(diabetes, obesity, smoking, depression, binge_drinking)
 ```
@@ -67,7 +62,7 @@ summary(cdc)
 ```
 
 # Exploratory Analysis
-
+PLACES is a county-level, wide-format dataset. The exploratory analyses below summarize the distribution of the key categorical variable  and the marginal distributions of the selected continuous measures
 ```{r}
 # number of counties by state
 cdc %>%
