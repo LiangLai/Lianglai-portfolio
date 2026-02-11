@@ -1,0 +1,185 @@
+---
+title: "CDC Data Analysis Exercise"
+---
+
+# Option2: Synthetic Data Generation and Exploartion 
+
+## Generate synthetic Data : 
+* In this section, I generate a synthetic dataset (N=1000) representing an older adult population (50+). 
+The underlying logic includes:
+1.  Age & Depression: Strong risk factors for dementia.
+2.  Education & Physical Activity: Protective factors.
+3.  Comorbidities (Diabetes/Hypertension): Driven by Age and BMI.
+4.  BMI & Dementia: A U-shaped relationship(both underweight and obese increase risk).
+
+```{r, warning=FALSE}
+# 0) Load required packages
+library(tidyverse)
+library(ggplot2)
+# 1) Reproducibility seed
+base::set.seed(1)
+
+# 2) functions
+inv_logit <- function(x) 1 / (1 + base::exp(-x))
+clamp <- function(x, lower, upper) base::pmax(lower, base::pmin(x, upper))
+
+# 3) Sample size
+N <- 1000
+
+# 4) Generate synthetic dataset
+synthetic_data <- tibble::tibble(
+  ID = base::sprintf("%05d", 1:N),
+
+  # Age: 85% from truncated normal-like around 65, 15% from uniform tails
+  age = {
+    mix <- stats::rbinom(n = N, size = 1, prob = 0.85)
+    main <- clamp(stats::rnorm(n = N, mean = 65, sd = 7.5), 50, 95)
+    tail <- stats::runif(n = N, min = 50, max = 95)
+    base::as.integer(base::round(base::ifelse(mix == 1, main, tail)))
+  },
+
+  # Gender: ~52% female
+  gender = {
+    g <- stats::rbinom(n = N, size = 1, prob = 0.52)
+    base::factor(base::ifelse(g == 1, "Female", "Male"), levels = c("Male", "Female"))
+  }
+) |>
+  dplyr::mutate(
+    # Education (years): mean ~13 with mild cohort effect (older -> slightly fewer years)
+    education_years = {
+      edu_base <- stats::rnorm(n = N, mean = 13, sd = 2.7)
+      edu <- clamp(edu_base - 0.03 * (age - 65), 0, 22)
+      base::as.integer(base::round(edu))
+    },
+
+    # BMI: mean ~27 sd ~5, mild age pattern, clamped
+    BMI = {
+      bmi_base <- stats::rnorm(n = N, mean = 27, sd = 5)
+      bmi_val <- clamp(bmi_base + 0.03 * (pmin(age, 70) - 50), 15, 55)
+      base::round(bmi_val, 1)
+    },
+
+    # Physical activity: ordered factor influenced by education (+) and age (-)
+    physical_activity = {
+      latent <- 0.12 * (education_years - 12) - 0.03 * (age - 65) + stats::rnorm(n = N)
+      pa <- base::cut(
+        latent,
+        breaks = c(-Inf, -0.4, 0.8, Inf),
+        labels = c("Low", "Moderate", "High"),
+        right = TRUE
+      )
+      base::factor(pa, levels = c("Low", "Moderate", "High"), ordered = TRUE)
+    },
+
+    # Depression history: ~15–20% with links to age and physical activity
+    depression_history = {
+      lp <- -1.6 +
+        0.012 * (age - 65) +
+        0.25  * (physical_activity == "Low") -
+        0.10  * (physical_activity == "High") +
+        0.08  * (gender == "Female")
+      stats::rbinom(n = N, size = 1, prob = inv_logit(lp))
+    },
+
+    # Diabetes and hypertension: probabilities increase with age and BMI
+    diabetes = {
+      lp <- -2.0 + 0.035 * (age - 65) + 0.070 * (BMI - 27) + 0.15 * (gender == "Male")
+      stats::rbinom(n = N, size = 1, prob = inv_logit(lp))
+    },
+
+    hypertension = {
+      lp <- -1.0 + 0.050 * (age - 65) + 0.040 * (BMI - 27) + 0.10 * (gender == "Male")
+      stats::rbinom(n = N, size = 1, prob = inv_logit(lp))
+    },
+
+    # Number of comorbidities (0,1,2) among diabetes + hypertension
+    n_comorbidities = diabetes + hypertension,
+
+    # Dementia (0/1): age & depression strong risk; edu & PA protective;
+    # diabetes & hypertension risk; BMI U-shaped via quadratic term
+    dementia = {
+      bmi_u <- ((BMI - 27)^2) / 25
+      lp <- -3.2 +
+        0.075 * (age - 65) +
+        0.85  * depression_history +
+        (-0.08) * (education_years - 13) +
+        (-0.25) * (physical_activity == "Moderate") +
+        (-0.50) * (physical_activity == "High") +
+        0.45  * diabetes +
+        0.35  * hypertension +
+        0.55  * bmi_u
+      stats::rbinom(n = N, size = 1, prob = inv_logit(lp))
+    }
+  )
+```
+
+# Exploration with plots
+
+```{r} 
+# Summary statistics
+summary(synthetic_data)
+str(synthetic_data)
+```
+
+## Age distribution 
+From the histogram, it can be seen that the age range is mainly concentrated between 55 and 75.
+```{r Age}
+ggplot(synthetic_data, aes(age)) +
+  geom_histogram(bins = 30) +
+  labs(title = "Age distribution", x = "Age", y = "Count")
+```
+
+## BMI distribution
+From the histogram, it can be seen that the BMI range is mainly concentrated between 25 and 30.
+```{r BMI}
+ggplot(synthetic_data, aes(BMI)) +
+  geom_histogram(bins = 30) +
+  labs(title = "BMI distribution", x = "BMI", y = "Count")
+```
+
+## Age trend with Dementia
+The smooth curve shows the trend of dementia probability increasing with age, which is as expected, as age was deliberately made a significant risk factor in the data generation process.
+```{r Age trend with Dementia}
+ggplot(synthetic_data, aes(x = age, y = dementia)) +
+  geom_smooth(method = "loess", color = "blue") + 
+  labs(title = "Dementia Risk increases with Age", y = "Probability")
+```
+
+## Check BMI with dementia
+The curve indicates a non-linear relationship between BMI and the risk of dementia. Its shape conforms to the expected U-shaped association, where the risk increases both when BMI is low and when it is high.
+```{r BMI with dementia}
+ggplot(synthetic_data, aes(x = BMI, y = dementia)) +
+  geom_smooth(method = "loess") +
+  labs(title = "U-shaped BMI relationship with dementia risk", x = "BMI", y = "Probability (loess-smoothed)")
+```
+
+# Fit model 
+## Model 1: logistic regression 
+From the results,
+```{r}
+m1 <- glm(
+  dementia ~ age + depression_history + education_years + physical_activity +
+    diabetes + hypertension + BMI,
+  data = synthetic_data,
+  family = binomial()
+)
+summary(m1)
+exp(coef(m1))
+```
+
+## Model 2: logistic regression + bmi^2
+```{r}
+m2 <- glm(
+  dementia ~ age + depression_history + education_years + physical_activity +
+    diabetes + hypertension + BMI + I(BMI^2),
+  data = synthetic_data,
+  family = binomial()
+)
+summary(m2)
+exp(coef(m2))
+# check model 
+AIC(m1, m2)
+```
+
+# Conclusion
+From the results, it can be seen that in both models, the risk of dementia increases with age and depression, while the risks of diabetes and hypertension increase. Adding the secondary BMI term significantly improves the model's fit and confirms the expected non-linear (U-shaped) relationship between BMI and the risk of dementia.
