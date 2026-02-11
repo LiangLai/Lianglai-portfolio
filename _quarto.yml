@@ -16,6 +16,8 @@ website:
             file: ready-exercise/ready-exercise.html
           - text: "Data Exercise"
             file: data-exercise/data-exercise.html
+          - text: "Data Analysis Exercise"
+            file: cdcdata-exercise/cdcdata-exercise.html
     right:
       - icon: github 
         href: https://github.com/LiangLai/Lianglai-portfolio   
