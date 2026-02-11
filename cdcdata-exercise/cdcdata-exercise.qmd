@@ -5,7 +5,7 @@ title: "CDC Data Analysis Exercise"
 # Data description
 
 This dataset contains model-based county-level estimates in GIS-friendly format. PLACES covers the entire United States—50 states and the District of Columbia—at county, place, census tract, and ZIP Code Tabulation Area levels.
-Source: (https://data.cdc.gov/500-Cities-Places/PLACES-County-Data-GIS-Friendly-Format-2025-releas/i46a-9kgh/about_data)
+Source: <https://data.cdc.gov/500-Cities-Places/PLACES-County-Data-GIS-Friendly-Format-2025-releas/i46a-9kgh/about_data>
 
 
 ```{r, warning = FALSE}
