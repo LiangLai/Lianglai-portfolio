@@ -1,0 +1,188 @@
+---
+title: "CDC Data Analysis Exercise"
+---
+
+# Data description
+
+This dataset contains model-based county-level estimates in GIS-friendly format. PLACES covers the entire United States—50 states and the District of Columbia—at county, place, census tract, and ZIP Code Tabulation Area levels.
+Source: (https://data.cdc.gov/500-Cities-Places/PLACES-County-Data-GIS-Friendly-Format-2025-releas/i46a-9kgh/about_data)
+
+
+```{r, warning = FALSE}
+## Load packages
+library(tidyverse)
+library(janitor)
+library(skimr)
+library(readr)
+library(ggplot2)
+library(here)
+library(scales)
+```
+
+
+```{r}
+## load data 
+library(here)
+library(tidyverse)
+library(janitor)
+
+cdc_raw <- read_csv(here("cdcdata-exercise", "PLACES__County_Data_(GIS_Friendly_Format),_2025_release_20260210.csv")) %>%
+  clean_names()
+```
+
+# Data clean
+I select a small set of columns to keep the analysis focused: identifiers, state, county, fips, population size and several health measures (continuous prevalence estimates). 
+```{r}
+cdc <- cdc_raw %>%
+  select(
+    state = state_abbr,
+    county = county_name,
+    fips = county_fips,
+    population = total_population,
+    # Health measures (Crude Prevalence)
+    diabetes = diabetes_crude_prev,
+    obesity = obesity_crude_prev,
+    depression = depression_crude_prev,
+    smoking = csmoking_crude_prev,
+    binge_drinking = binge_crude_prev
+  )
+
+glimpse(cdc)
+skim(cdc)
+```
+
+We will drop rows when key variables are missing.
+```{r}
+# check data
+colSums(is.na(cdc))
+
+# drop rows 
+cdc <- cdc %>%
+  drop_na(diabetes, obesity, smoking, depression, binge_drinking)
+```
+
+```{r}
+# check outliers
+summary(cdc)
+```
+
+# Exploratory Analysis
+
+```{r}
+# number of counties by state
+cdc %>%
+  count(state, sort = TRUE) %>%
+  mutate(pct = n / sum(n))
+
+# Bar plot: counties per state
+ggplot(cdc %>% count(state), aes(x = reorder(state, n), y = n)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Number of Counties by State",
+    x = "State",
+    y = "Number of counties"
+  )
+```
+```{r}
+#  Summary of population 
+skim(cdc$population)
+
+# Histogram of population (log scale due to strong right skew)
+ggplot(cdc, aes(x = population)) +
+  geom_histogram(bins = 40) +
+  scale_x_log10(labels = comma) +
+  labs(
+    title = "Distribution of County Population (Log Scale)",
+    x = "Population (log10)",
+    y = "Number of counties"
+  )
+```
+
+
+```{r}
+# Summary of Obesity (crude prevalence)
+skim(cdc$obesity)
+
+# Histogram of obesity prevalence
+ggplot(cdc, aes(x = obesity)) +
+  geom_histogram(bins = 30) +
+  labs(
+    title = "Distribution of Adult Obesity Prevalence (Crude)",
+    x = "Obesity prevalence",
+    y = "Number of counties"
+  )
+```
+
+
+```{r}
+# Summary of diabetes
+skim(cdc$diabetes)
+
+# Histogram of diabetes prevalence
+ggplot(cdc, aes(x = diabetes)) +
+  geom_histogram(bins = 30) +
+  labs(
+    title = "Distribution of Diabetes Prevalence (Crude)",
+    x = "Diabetes prevalence",
+    y = "Number of counties"
+  )
+```
+
+
+```{r}
+# Summary of smoking
+skim(cdc$smoking)
+
+# Histogram of smoking prevalence
+ggplot(cdc, aes(x = smoking)) +
+  geom_histogram(bins = 30) +
+  labs(
+    title = "Distribution of Current Smoking Prevalence (Crude)",
+    x = "Smoking prevalence",
+    y = "Number of counties"
+  )
+```
+
+
+```{r}
+# Summary of depression
+skim(cdc$depression)
+
+# Histogram of depression prevalence
+ggplot(cdc, aes(x = depression)) +
+  geom_histogram(bins = 30) +
+  labs(
+    title = "Distribution of Depression Prevalence (Crude)",
+    x = "Depression prevalence",
+    y = "Number of counties"
+  )
+```
+
+
+```{r}
+# Summary of binge drinking 
+skim(cdc$binge_drinking)
+
+# Histogram of binge drinking prevalence
+ggplot(cdc, aes(x = binge_drinking)) +
+  geom_histogram(bins = 30) +
+  labs(
+    title = "Distribution of Binge Drinking Prevalence (Crude)",
+    x = "Binge drinking prevalence",
+    y = "Number of counties"
+  )
+
+```
+
+
+```{r}
+# Bivariate relationship: obesity vs diabetes
+ggplot(cdc, aes(x = obesity, y = diabetes)) +
+  geom_point(alpha = 0.4) +
+  labs(
+    title = "Obesity vs Diabetes (County Level)",
+    x = "Obesity prevalence",
+    y = "Diabetes prevalence"
+  )
+```
