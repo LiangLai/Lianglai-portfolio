@@ -186,3 +186,163 @@ ggplot(cdc, aes(x = obesity, y = diabetes)) +
   )
 ```
 A positive relationship is expected, with higher obesity prevalence generally corresponding to higher diabetes prevalence
+
+# This section contributed by Austin Hill
+
+```{r}
+# Load packages
+library(tidyverse)
+library(janitor)
+library(skimr)
+library(readr)
+library(ggplot2)
+library(scales)
+```
+
+```{r}
+# need to know how many rows were in the orginal data set
+cdc_raw <- read_csv("PLACES__County_Data_(GIS_Friendly_Format),_2025_release_20260210.csv") %>%
+  clean_names()
+
+n <- nrow(cdc_raw)
+n
+```
+
+```{r}
+# to allow for reproducibility 
+set.seed(123)
+
+# List of US states
+states <- state.abb
+# Just made countys into numbers to simplify 
+cdc_synth <- tibble(
+  state = sample(states, n, replace = TRUE),
+  county = paste("SyntheticCounty", 1:n),
+  fips = sprintf("%05d", sample(10000:99999, n, replace = TRUE)),
+  
+  # Population: random uniform between 1,000 and 1,000,000
+  population = sample(1000:1000000, n, replace = TRUE),
+  
+  # Health measures: random percentages between realistic bounds
+  diabetes = runif(n, 5, 20),
+  obesity = runif(n, 20, 50),
+  depression = runif(n, 10, 35),
+  smoking = runif(n, 5, 30),
+  binge_drinking = runif(n, 5, 25)
+)
+
+glimpse(cdc_synth)
+```
+
+# Reproducing exploratory analysis with new synthetic data
+
+```{r}
+# Counties per state
+cdc_synth %>%
+  count(state, sort = TRUE) %>%
+  mutate(pct = n / sum(n))
+ggplot(cdc_synth %>% count(state), aes(x = reorder(state, n), y = n)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Synthetic: Number of Counties by State",
+    x = "State",
+    y = "Number of counties"
+  )
+
+```
+
+```{r}
+# Population Summary 
+skim(cdc_synth$population)
+
+ggplot(cdc_synth, aes(x = population)) +
+  geom_histogram(bins = 40) +
+  labs(
+    title = "Synthetic Population Distribution",
+    x = "Population",
+    y = "Number of counties"
+  )
+```
+
+```{r}
+# Obesity Distribution 
+skim(cdc_synth$obesity)
+
+ggplot(cdc_synth, aes(x = obesity)) +
+  geom_histogram(bins = 30) +
+  labs(
+    title = "Synthetic Obesity Prevalence",
+    x = "Obesity prevalence",
+    y = "Number of counties"
+  )
+```
+
+```{r}
+# Diabetes Distribution 
+skim(cdc_synth$diabetes)
+
+ggplot(cdc_synth, aes(x = diabetes)) +
+  geom_histogram(bins = 30) +
+  labs(
+    title = "Synthetic Diabetes Prevalence",
+    x = "Diabetes prevalence",
+    y = "Number of counties"
+  )
+```
+
+```{r}
+# Smoking Distribution 
+skim(cdc_synth$smoking)
+
+ggplot(cdc_synth, aes(x = smoking)) +
+  geom_histogram(bins = 30) +
+  labs(
+    title = "Synthetic Smoking Prevalence",
+    x = "Smoking prevalence",
+    y = "Number of counties"
+  )
+```
+
+```{r}
+# Depression Distribution 
+skim(cdc_synth$depression)
+
+ggplot(cdc_synth, aes(x = depression)) +
+  geom_histogram(bins = 30) +
+  labs(
+    title = "Synthetic Depression Prevalence",
+    x = "Depression prevalence",
+    y = "Number of counties"
+  )
+```
+
+```{r}
+# Binge Drinking Distribution
+skim(cdc_synth$binge_drinking)
+
+ggplot(cdc_synth, aes(x = binge_drinking)) +
+  geom_histogram(bins = 30) +
+  labs(
+    title = "Synthetic Binge Drinking Prevalence",
+    x = "Binge drinking prevalence",
+    y = "Number of counties"
+  )
+```
+
+```{r}
+# Obesity vs Diabetes Relationship
+ggplot(cdc_synth, aes(x = obesity, y = diabetes)) +
+  geom_point(alpha = 0.4) +
+  labs(
+    title = "Synthetic: Obesity vs Diabetes",
+    x = "Obesity prevalence",
+    y = "Diabetes prevalence"
+  )
+```
+# Summary
+The original CDC dataset shows real-world structure and patterns. Some states (like Texas) have many more counties than others, population is strongly right-skewed, and health measures such as obesity and diabetes cluster around realistic averages. There is also a clear positive relationship between obesity and diabetes, which reflects known public health trends.
+
+In contrast, the synthetic dataset was generated randomly. States are more evenly distributed, population does not show strong skewness, and health measures are spread evenly across chosen ranges. Because the variables were simulated independently, there is no meaningful relationship between obesity and diabetes in the synthetic data.
+
+Overall, the synthetic data matches the structure (same columns and number of rows) but does not reproduce the real-world patterns seen in the original CDC dataset.
