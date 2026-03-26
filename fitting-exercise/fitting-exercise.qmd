@@ -384,3 +384,135 @@ log_all_results %>%
   roc_auc(truth = SEX, .pred_1, event_level = "first")
 ```
 The logistic model using DOSE alone showed poor predictive performance, with a ROC-AUC of 0.592 and accuracy of 0.867, where the high accuracy is largely driven by class imbalance. Adding all predictors substantially improved the model, with ROC-AUC increasing to 0.978 and accuracy reaching 0.95. However, this does not mean sex can be clinically predicted from these variables. And since gender is something we already know, it has no practical significance.-->
+
+
+# This section added by Saraa Al Jawad
+
+
+```{r}
+
+# Predictions for Model 1 (DOSE only)
+pred_dose <- predict(lm_dose_fit, new_data = train_data) %>%
+  bind_cols(train_data)
+
+# Predictions for Model 2 (all predictors)
+pred_all <- predict(lm_all_fit, new_data = train_data) %>%
+  bind_cols(train_data)
+
+# Null model predictions
+null_pred_val <- mean(train_data$Y)
+pred_null <- train_data %>%
+  mutate(.pred = null_pred_val)
+
+# Combine all predictions
+pred_dose$model <- "Model 1 (DOSE)"
+pred_all$model  <- "Model 2 (All predictors)"
+pred_null$model <- "Null model"
+
+pred_all_models <- bind_rows(pred_dose, pred_all, pred_null)
+
+# Plot observed vs predicted
+ggplot(pred_all_models, aes(x = Y, y = .pred, color = model)) +
+  geom_point(alpha = 0.6) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") + 
+  xlim(0, 5000) + ylim(0, 5000) + 
+    labs(
+    title = "Observed vs Predicted Values",
+    x = "Observed Y",
+    y = "Predicted Y"
+  )
+```
+
+The null model produces a horizontal line because it predicts the same value (the mean) for all observations.
+
+The model using only DOSE shows predictions grouped into a few horizontal lines. This occurs because DOSE only takes a limited number of discrete values, leading to a limited number of predicted outcomes.
+
+The model using all predictors performs best, with predictions closer to the diagonal line. However, there is still noticeable scatter, especially at higher observed values where predictions tend to be lower. This suggests that while the model captures some of the signal, it does not fully explain the variability in the data and may still be missing important patterns.
+
+
+```{r}
+
+# Residuals for Model 2 (best model)
+pred_all$residuals <- pred_all$.pred - pred_all$Y
+
+ggplot(pred_all, aes(x = .pred, y = residuals)) +
+  geom_point(alpha = 0.6, color = "blue") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  ylim(-2500, 2500) +
+  labs(
+    title = "Residual Plot (Model with All Predictors)",
+    x = "Predicted Values",
+    y = "Residuals"
+  )
+```
+
+The residual plot shows the difference between predicted and observed values. Ideally, residuals should be randomly scattered around zero, indicating that the model captures the underlying structure of the data.
+
+In this case, there appears to be some pattern in the residuals, with more and larger negative values compared to positive ones. This suggests that the model tends to underestimate higher values of the outcome. This may indicate that important variables are missing or that the relationship between predictors and the outcome is not fully captured by a linear model, and a more complex model may be needed.
+
+
+```{r}
+# Bootstrap resampling for Model 2 uncertainty
+set.seed(rngseed)
+
+dat_bs <- bootstraps(train_data, times = 100)
+```
+
+
+```{r}
+# Store bootstrap predictions
+pred_bs <- matrix(NA, nrow = 100, ncol = nrow(train_data))
+
+for (i in 1:100) {
+  dat_sample <- rsample::analysis(dat_bs$splits[[i]])
+  
+  fit_bs <- lm_spec %>%
+    fit(Y ~ DOSE + AGE + SEX + WT + HT, data = dat_sample)
+  
+  pred_bs[i, ] <- predict(fit_bs, new_data = train_data)$.pred
+}
+```
+
+
+```{r}
+# Compute bootstrap median and confidence intervals
+preds <- pred_bs |> apply(2, quantile, c(0.055, 0.5, 0.945)) |> t()
+
+preds_df <- data.frame(
+  Y = train_data$Y,
+  lower = preds[, 1],
+  median = preds[, 2],
+  upper = preds[, 3],
+  point_est = pred_all$.pred
+)
+```
+
+```{r}
+ggplot(preds_df, aes(x = Y)) +
+  geom_point(aes(y = point_est, color = "Point estimate"), alpha = 0.6) +
+  geom_point(aes(y = median, color = "Median"), alpha = 0.6) +
+  geom_point(aes(y = lower, color = "Lower CI"), alpha = 0.5) +
+  geom_point(aes(y = upper, color = "Upper CI"), alpha = 0.5) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  scale_color_manual(values = c(
+    "Point estimate" = "black",
+    "Median" = "blue",
+    "Lower CI" = "red",
+    "Upper CI" = "green"
+  )) +
+  xlim(0, 5000) + ylim(0, 5000) +
+  labs(
+    title = "Model Predictions with Bootstrap Uncertainty",
+    x = "Observed Y",
+    y = "Predicted Y",
+    color = "Prediction Type"
+  )
+```
+
+This plot shows the original model predictions along with bootstrap-based uncertainty estimates. The black points represent the original predictions, while the blue points represent the bootstrap median, and the red and green points represent the lower and upper 89% confidence bounds.
+
+Overall, the predictions follow the diagonal line reasonably well, indicating that the model captures some of the relationship between predictors and the outcome. However, there is noticeable scatter, suggesting that the model is not highly accurate.
+
+The bootstrap median is generally close to the original predictions, indicating that the model is relatively stable. However, the spread between the lower and upper bounds shows clear uncertainty in the predictions, particularly for larger observed values.
+
+In addition, many predictions fall below the diagonal line at higher observed values, indicating that the model tends to underestimate larger outcomes. This suggests that the model does not fully capture all patterns in the data and may require additional variables or a more flexible modeling approach.
