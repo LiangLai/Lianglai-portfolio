@@ -322,7 +322,6 @@ With a different random seed, the CV RMSE values shift slightly, but the overall
 
 This is part 1 
 
-
 <!-- This is previous task, fit a logistic model for SEX.
 ### Fit a logistic model to the SEX
 ```{r}
@@ -387,7 +386,6 @@ The logistic model using DOSE alone showed poor predictive performance, with a R
 
 
 # This section added by Saraa Al Jawad
-
 
 ```{r}
 
@@ -516,3 +514,46 @@ Overall, the predictions follow the diagonal line reasonably well, indicating th
 The bootstrap median is generally close to the original predictions, indicating that the model is relatively stable. However, the spread between the lower and upper bounds shows clear uncertainty in the predictions, particularly for larger observed values.
 
 In addition, many predictions fall below the diagonal line at higher observed values, indicating that the model tends to underestimate larger outcomes. This suggests that the model does not fully capture all patterns in the data and may require additional variables or a more flexible modeling approach.
+
+
+# Part 3 
+## Model Evaluation Using Test Data
+```{r}
+# Generate predictions for test data using Model 2
+pred_test <- predict(lm_all_fit, new_data = test_data) %>%
+  bind_cols(test_data %>% select(Y)) %>%
+  mutate(data_type = "Test data")
+
+# Add label to training predictions
+pred_train <- lm_all_results %>%
+  mutate(data_type = "Training data")
+
+# Combine train and test predictions
+pred_combined <- bind_rows(pred_train, pred_test)
+```
+
+
+```{r}
+# Plot observed vs predicted for both train and test data
+ggplot(pred_combined, aes(x = Y, y = .pred, 
+                          color = data_type, 
+                          shape = data_type)) +
+  geom_point(alpha = 0.6) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  xlim(0, 5000) + ylim(0, 5000) +
+  labs(
+    title = "Observed vs Predicted: Training and Test Data (Model 2)",
+    x = "Observed",
+    y = "Predicted",
+    color = "Data",
+    shape = "Data"
+  ) +
+  theme_bw()
+```
+
+The test data points are well mixed with the training data points, indicating no systematic overfitting. The model generalizes reasonably well to unseen data.
+
+# Conclusions
+From the RMSE perspective, both Model 1 and Model 2 outperform the null model with an RMSE of 948. Both Model 1 (RMSE = 702) and Model 2 (RMSE = 627) successfully reduce this error. 
+For Model 1, the superiority over the null model is reasonable because drug dosage and outcomes are typically related. However, for any real purpose, this model is almost useless as it does not include any variables, ignores all other variables, and cannot draw valid conclusions. Only one thing we can know is that the drug is a predictor of the outcome, but we cannot know how much it contributes to the outcome.
+For Model 2, it further improves the predictive accuracy, achieving the lowest RMSE of 627.27. The result is reasonable as it incorporates some demographics and other variables, making the model more accurate. From the graph, the green points of Model 2 eventually deviate from the horizontal line, but there is still some scatter. For reality, I think it needs to be used with caution as there are still large deviations and it is impossible to accurately predict.
