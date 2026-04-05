@@ -54,6 +54,20 @@ d1 <- time0 %>%
   left_join(y_dt, by = "ID")
 
 # Converts RACE and SEX to factor variables and keeps only these variables: Y,DOSE,AGE,SEX,RACE,WT,HT
+d2 <- d1 %>%
+  mutate(
+    RACE = as.factor(RACE),
+    SEX = as.factor(SEX),
+    DOSE = as.factor(DOSE)
+  ) %>% 
+  select(Y, DOSE, AGE, SEX, RACE, WT, HT) 
+
+# save 
+saveRDS(d2, here("fitting-exercise", "clean-mavoglurant-data.rds"))
+```
+
+```{r}
+# Converts RACE and SEX to factor variables and keeps only these variables: Y,DOSE,AGE,SEX,RACE,WT,HT
 d1 <- d1 %>%
   mutate(
     RACE = as.factor(RACE),
