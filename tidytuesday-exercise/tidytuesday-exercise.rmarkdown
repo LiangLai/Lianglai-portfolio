@@ -1,0 +1,557 @@
+---
+title: "Tidy Tuesday Exercise"
+---
+
+# Introduction
+This week's Tidy Tuesday dataset comes from Te Papa Tongarewa (The Museum of New Zealand) and contains logbook entries of seabird sightings near New Zealand from 1969 to 1990. Each record corresponds to a 10-minute observation window from a ship, including the bird species observed, their behaviors, and environmental conditions such as wind speed, sea state, and season.
+
+Question: Can environmental conditions (season, wind speed class, sea state class, and latitude) predict whether a Wandering Albatross will be observed during a given 10-minute ship survey?
+
+We want to choose The Wandering Albatross as our target species for this exercise because it has the highest number of observation records across all surveys (11296 records when all plumage/age variants are combined). 
+
+# Setup
+
+```{r, warning=FALSE}
+# Load packages
+library(tidyverse)
+library(tidymodels)
+library(GGally)
+library(here)
+library(knitr)
+library(janitor)
+library(vip) 
+
+# set seed 
+rngseed <- 1234
+set.seed(rngseed)
+```
+
+# Loading Data
+
+```{r}
+# Load data
+birds <- read_csv(here("tidytuesday-exercise", "data", "birds.csv"))
+ships <- read_csv(here("tidytuesday-exercise", "data", "ships.csv"))
+beaufort_scale <- read_csv(here("tidytuesday-exercise", "data", "beaufort_scale.csv"))
+sea_states <- read_csv(here("tidytuesday-exercise", "data", "sea_states.csv"))
+```
+
+# Initial Exploration
+```{r}
+# Check the dimensions of each dataset
+dim(birds)
+dim(ships)
+dim(beaufort_scale)
+dim(sea_states)
+
+# Look at the structure of each dataset
+glimpse(birds)
+glimpse(ships)
+```
+
+```{r explore-missing}
+# Calculate missing rate (%) for every variable in birds and ships
+# This guides which variables are safe to use as predictors
+
+missing_birds <- birds %>%
+  summarise(across(everything(), ~ mean(is.na(.)) * 100)) %>%
+  pivot_longer(everything(),
+               names_to  = "variable",
+               values_to = "pct_missing") %>%
+  filter(pct_missing > 0) %>%
+  arrange(desc(pct_missing))
+
+missing_ships <- ships %>%
+  summarise(across(everything(), ~ mean(is.na(.)) * 100)) %>%
+  pivot_longer(everything(),
+               names_to  = "variable",
+               values_to = "pct_missing") %>%
+  filter(pct_missing > 0) %>%
+  arrange(desc(pct_missing))
+
+kable(missing_birds,
+      caption = "Missing rates in birds dataset (%)",
+      digits  = 1)
+
+kable(missing_ships,
+      caption = "Missing rates in ships dataset (%)",
+      digits  = 1)
+```
+
+We can see that some variables have a high percentage of missing values, such as `sex` and `moulting` in the birds dataset, and `depth`, `sea_surface_temperature`, `pressure`, and `air_temperature` are all \>90% missing in the ships dataset. We will avoid using these variables as predictors in our model.
+
+```{r explore-species}
+# Confirm that Wandering Albatross has the most observation records
+# when all plumage/age variants are combined
+
+# Top 10 individual species entries by record count
+species_counts <- birds %>%
+  count(species_common_name, sort = TRUE)
+
+kable(head(species_counts, 10),
+      caption = "Top 10 species by number of observation records",
+      col.names = c("Species", "Records"))
+
+# Summarise all Wandering Albatross variants together
+wandering_total <- birds %>%
+  filter(str_detect(species_common_name, "Wandering")) %>%
+  summarise(
+    n_records   = n(),
+    total_count = sum(count, na.rm = TRUE),
+    n_variants  = n_distinct(species_common_name)
+  )
+
+kable(wandering_total,
+      caption = "Wandering Albatross combined across all plumage/age variants",
+      col.names = c("Observation Records", "Total Birds Counted", "Variants"))
+```
+
+We can see that the Wandering Albatross has 11296 observation records across all plumage variants, which is the highest among all species. This confirms our choice of the Wandering Albatross as our target species for prediction.
+
+
+
+
+# Data Wrangling
+
+## Join datasets
+
+```{r join-data}
+# Join bird observations with ship-level environmental metadata,
+# then attach Beaufort wind descriptions and sea state descriptions
+birds_joined <- birds %>%
+  left_join(ships,          by = "record_id") %>%
+  left_join(beaufort_scale, by = "wind_speed_class") %>%
+  left_join(sea_states,     by = "sea_state_class")
+
+# Remove bird records that have no matching ship entry
+d1 <- birds_joined %>%
+  filter(!is.na(date))
+
+cat("Rows after removing unmatched records:", nrow(d1), "\n")
+```
+
+## Create the binary outcome variable
+
+
+```{r}
+# Identify all record_ids that contain at least one Wandering Albatross sighting
+albatross_records <- d1 %>%
+  filter(str_detect(species_common_name, "Wandering")) %>%
+  distinct(record_id) %>%
+  mutate(albatross_present = TRUE)
+
+# Build a ship-level dataset: one row per survey
+# Surveys not matched to albatross_records receive albatross_present = FALSE
+ship_level <- ships %>%
+  left_join(albatross_records, by = "record_id") %>%
+  mutate(albatross_present = replace_na(albatross_present, FALSE))
+
+# Report class distribution
+cat("Total ship surveys:        ", nrow(ship_level), "\n")
+cat("Surveys WITH albatross:    ", sum( ship_level$albatross_present), "\n")
+cat("Surveys WITHOUT albatross: ", sum(!ship_level$albatross_present), "\n")
+cat("Prevalence:                ",
+    round(mean(ship_level$albatross_present) * 100, 1), "%\n")
+```
+
+## Select and clean modeling variables
+
+```{r}
+# Retain only the outcome and the four predictors identified as usable
+# Drop all other variables, then remove any row with a missing value
+
+model_data <- ship_level %>%
+  select(
+    albatross_present,   # binary outcome
+    season,              # southern hemisphere season
+    wind_speed_class,    # Beaufort wind scale (0-12)
+    sea_state_class,     # sea state class (0-6)
+    latitude             # decimal latitude (negative = southern hemisphere)
+  ) %>%
+  mutate(
+    # Convert outcome to factor; "present" is the positive class
+    albatross_present = factor(albatross_present,
+                               levels = c(FALSE, TRUE),
+                               labels = c("absent", "present")),
+    # Convert season to an unordered factor
+    season            = factor(season),
+    # Ensure scale variables are stored as numeric
+    wind_speed_class  = as.numeric(wind_speed_class),
+    sea_state_class   = as.numeric(sea_state_class)
+  ) %>%
+  # Drop any row missing a predictor or the outcome
+  drop_na()
+
+cat("Complete cases available for modeling:", nrow(model_data), "\n")
+cat("\nClass balance:\n")
+print(table(model_data$albatross_present))
+cat("\nPrevalence of positive class:",
+    round(mean(model_data$albatross_present == "present") * 100, 1), "%\n")
+```
+
+# Exploratory Data Analysis
+
+Before fitting models, I explore univariate and bivariate relationships to understand how each predictor relates to albatross presence.
+
+```{r eda-season, fig.cap="Albatross presence rate by season"}
+model_data %>%
+  group_by(season) %>%
+  summarise(
+    n           = n(),
+    pct_present = mean(albatross_present == "present") * 100
+  ) %>%
+  ggplot(aes(x = reorder(season, pct_present),
+             y = pct_present,
+             fill = season)) +
+  geom_col(show.legend = FALSE, width = 0.6) +
+  geom_text(aes(label = paste0(round(pct_present, 1), "%")),
+            hjust = -0.15, size = 3.5) +
+  coord_flip(ylim = c(0, 60)) +
+  labs(
+    title = "Albatross Presence Rate by Season",
+    x     = NULL,
+    y     = "Surveys with Albatross Present (%)"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+We can see that the Albatross presence rates were highest in spring (60%) and winter (58.9%), and lowest in summer (43.6%). 
+
+```{r eda-wind, fig.cap="Albatross presence rate by Beaufort wind class"}
+model_data %>%
+  group_by(wind_speed_class) %>%
+  summarise(
+    pct_present = mean(albatross_present == "present") * 100,
+    n           = n()
+  ) %>%
+  ggplot(aes(x = wind_speed_class, y = pct_present)) +
+  geom_line(color = "steelblue") +
+  geom_point(aes(size = n), color = "steelblue") +
+  labs(
+    title = "Albatross Presence Rate by Wind Speed Class",
+    x     = "Beaufort Wind Class (0 = calm, 12 = hurricane force)",
+    y     = "Surveys with Albatross Present (%)",
+    size  = "Surveys"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+Albatross presence increased steadily with wind speed up to Beaufort class 9 (~70%), then dropped sharply to near zero at classes 10–12. This suggests that moderate to strong winds may be favorable for albatross sightings, but extremely high winds likely deter them. Because classes 10–12 are very rare in the dataset, so those estimates are unreliable.
+
+```{r eda-latitude, fig.cap="Latitude distribution by albatross presence"}
+model_data %>%
+  ggplot(aes(x = latitude, fill = albatross_present)) +
+  geom_density(alpha = 0.45) +
+  labs(
+    title = "Latitude Distribution by Albatross Presence",
+    x     = "Latitude (negative = southern hemisphere)",
+    y     = "Density",
+    fill  = "Albatross"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+Surveys with albatross present tend to be concentrated at more southern latitudes, especially around the mid-to-high southern latitudes. When absent, surveys were more broadly distributed and showed a notable peak near −60°.
+
+
+```{r eda-sea-state, fig.cap="Albatross presence proportion by sea state class"}
+model_data %>%
+  ggplot(aes(x = factor(sea_state_class), fill = albatross_present)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(
+    title = "Albatross Presence Proportion by Sea State Class",
+    x     = "Sea State Class (0 = calm, 6 = very rough)",
+    y     = "Proportion of Surveys",
+    fill  = "Albatross"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+Albatross presence proportion increased consistently with sea state class, from approximately 35% at class 1 (calm) to nearly 70% at classes 5–6 (rough to very rough). This pattern suggests a possible positive association between rougher sea conditions and Wandering albatross sightings in this dataset.
+
+# Modeling
+
+## Train / Test Split
+
+```{r split}
+# 75% training, 25% test, stratified by outcome to preserve class balance
+set.seed(rngseed)
+split <- initial_split(model_data,
+                       prop   = 0.75,
+                       strata = albatross_present)
+
+train_data <- training(split)
+test_data  <- testing(split)
+```
+
+## Cross-Validation Setup
+
+```{r cv-setup}
+# 5-fold CV on training data, stratified by outcome
+set.seed(rngseed)
+cv_folds <- vfold_cv(train_data, v      = 5, strata = albatross_present)
+```
+
+## Preprocessing Recipe
+
+```{r recipe}
+# A single shared recipe is applied to all three models for a fair comparison
+albatross_recipe <- recipe(albatross_present ~ ., data = train_data) %>%
+  # Encode the season factor as dummy variables
+  # (required for logistic regression and LASSO)
+  step_dummy(season) %>%
+  # Normalize all numeric predictors to mean = 0, sd = 1
+  # This is especially important for LASSO, which penalizes raw coefficient size
+  step_normalize(all_numeric_predictors()) %>%
+  # Remove near-zero variance predictors that may arise after dummy encoding
+  step_nzv(all_predictors())
+```
+
+## Model 1: Logistic Regression 
+```{r logistic}
+# Logistic regression with penalty = 0 (no regularization)
+# Using glmnet engine to keep it consistent with the LASSO model below
+lr_spec <- logistic_reg(penalty = 0, mixture = 0) %>%
+  set_engine("glmnet") %>%
+  set_mode("classification")
+
+lr_workflow <- workflow() %>%
+  add_recipe(albatross_recipe) %>%
+  add_model(lr_spec)
+
+# Evaluate via cross-validation
+set.seed(rngseed)
+lr_cv_results <- fit_resamples(
+  lr_workflow,
+  resamples = cv_folds,
+  metrics   = metric_set(roc_auc, accuracy, sens, spec),
+  control   = control_resamples(save_pred = TRUE)
+)
+
+lr_metrics <- collect_metrics(lr_cv_results)
+kable(lr_metrics,
+      caption = "Logistic Regression: Cross-Validation Metrics",
+      digits  = 3)
+```
+
+## Model 2: LASSO Logistic Regression
+
+```{r lasso}
+# LASSO:  L1 regularization
+lasso_spec <- logistic_reg(penalty = tune(), mixture = 1) %>%
+  set_engine("glmnet") %>%
+  set_mode("classification")
+
+lasso_workflow <- workflow() %>%
+  add_recipe(albatross_recipe) %>%
+  add_model(lasso_spec)
+
+# Search over 30 penalty values from 10^-4 to 10^0 (log scale)
+lasso_grid <- grid_regular(
+  penalty(range = c(-4, 0)),
+  levels = 30
+)
+
+# Tune penalty using CV
+set.seed(rngseed)
+lasso_tune_results <- tune_grid(
+  lasso_workflow,
+  resamples = cv_folds,
+  grid      = lasso_grid,
+  metrics   = metric_set(roc_auc, accuracy),
+  control   = control_grid(save_pred = TRUE)
+)
+
+# Visualize the tuning curve: AUC as a function of penalty strength
+autoplot(lasso_tune_results) +
+  labs(title = "LASSO: ROC AUC Across Regularization Penalty Values") +
+  theme_minimal(base_size = 13)
+```
+
+```{r lasso-finalize}
+# Select the penalty that maximizes cross-validated ROC AUC
+best_lasso <- select_best(lasso_tune_results, metric = "roc_auc")
+cat("Best LASSO penalty:", round(best_lasso$penalty, 5), "\n")
+
+# Finalize workflow with the best penalty
+lasso_final_workflow <- finalize_workflow(lasso_workflow, best_lasso)
+
+# Refit with CV at the best penalty for stable metric estimates
+lasso_cv_results <- fit_resamples(
+  lasso_final_workflow,
+  resamples = cv_folds,
+  metrics   = metric_set(roc_auc, accuracy, sens, spec),
+  control   = control_resamples(save_pred = TRUE)
+)
+
+lasso_metrics <- collect_metrics(lasso_cv_results)
+kable(lasso_metrics,
+      caption = "LASSO Logistic Regression (Best Penalty): Cross-Validation Metrics",
+      digits  = 3)
+```
+
+## Model 3: Random Forest
+
+```{r random-forest}
+# Random Forest with tunable mtry and min_n
+rf_spec <- rand_forest(
+  mtry  = tune(),   # predictors randomly sampled at each split
+  trees = 500,      # fixed number of trees (more = more stable estimates)
+  min_n = tune()    # minimum observations required in a terminal node
+) %>%
+  set_engine("ranger", importance = "impurity", seed = rngseed) %>%  # impurity-based VIP
+  set_mode("classification")
+
+rf_workflow <- workflow() %>%
+  add_recipe(albatross_recipe) %>%
+  add_model(rf_spec)
+
+# Grid of mtry (1 to 4, matching our predictor count) and min_n values
+rf_grid <- grid_regular(
+  mtry(range  = c(1, 4)),
+  min_n(range = c(5, 40)),
+  levels = 4
+)
+
+# Tune using CV
+set.seed(rngseed)
+rf_tune_results <- tune_grid(
+  rf_workflow,
+  resamples = cv_folds,
+  grid      = rf_grid,
+  metrics   = metric_set(roc_auc, accuracy),
+  control   = control_grid(save_pred = TRUE)
+)
+
+# Show top 5 hyperparameter combinations
+show_best(rf_tune_results, metric = "roc_auc", n = 5) %>%
+  kable(caption = "Random Forest: Top 5 Hyperparameter Combinations",
+        digits  = 3)
+```
+
+```{r rf-finalize}
+# Select the best hyperparameter combination
+best_rf <- select_best(rf_tune_results, metric = "roc_auc")
+cat("Best mtry:", best_rf$mtry, " | Best min_n:", best_rf$min_n, "\n")
+
+# Finalize and refit with CV for stable metric estimates
+rf_final_workflow <- finalize_workflow(rf_workflow, best_rf)
+
+rf_cv_results <- fit_resamples(
+  rf_final_workflow,
+  resamples = cv_folds,
+  metrics   = metric_set(roc_auc, accuracy, sens, spec),
+  control   = control_resamples(save_pred = TRUE)
+)
+
+rf_metrics <- collect_metrics(rf_cv_results)
+kable(rf_metrics,
+      caption = "Random Forest (Best Params): Cross-Validation Metrics",
+      digits  = 3)
+```
+
+## Model Comparison
+
+```{r model-comparison, fig.cap="Cross-validation ROC AUC across all three models"}
+# Combine CV results from all models into one dataframe
+all_cv_metrics <- bind_rows(
+  lr_metrics    %>% mutate(model = "Logistic Regression"),
+  lasso_metrics %>% mutate(model = "LASSO Logistic Regression"),
+  rf_metrics    %>% mutate(model = "Random Forest")
+)
+
+# Summary table: ROC AUC ranked best to worst
+auc_summary <- all_cv_metrics %>%
+  filter(.metric == "roc_auc") %>%
+  select(model, mean, std_err) %>%
+  arrange(desc(mean))
+
+kable(auc_summary,
+      caption   = "Cross-Validation ROC AUC: All Models",
+      digits    = 4,
+      col.names = c("Model", "Mean AUC", "Std Error"))
+
+# Dot-and-error-bar comparison plot
+auc_summary %>%
+  ggplot(aes(x = reorder(model, mean), y = mean, color = model)) +
+  geom_point(size = 5) +
+  geom_errorbar(aes(ymin = mean - std_err,
+                    ymax = mean + std_err),
+                width = 0.15, linewidth = 0.8) +
+  coord_flip(ylim = c(0.5, 1.0)) +
+  labs(
+    title = "Cross-Validation ROC AUC Comparison",
+    x     = NULL,
+    y     = "Mean ROC AUC (± 1 SE)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "none")
+```
+
+```{r all-metrics-table}
+# Full comparison table: all four metrics for all three models
+all_cv_metrics %>%
+  filter(.metric %in% c("roc_auc", "accuracy", "sens", "spec")) %>%
+  select(model, .metric, mean, std_err) %>%
+  pivot_wider(names_from  = .metric,
+              values_from = c(mean, std_err)) %>%
+  kable(caption = "Full CV Metric Comparison Across All Three Models",
+        digits  = 3)
+```
+
+Random Forest clearly outperformed both linear models with a mean cross-validated AUC of 0.731, compared to approximately 0.627 for Logistic Regression and LASSO. The near-identical performance of LR and LASSO suggests that regularization adds little value when only four predictors are available. All three models showed higher specificity than sensitivity , indicating that predicting true absences was easier than predicting true presences. Random Forest led on every metric, with the largest advantage in sensitivity, meaning it was notably better at detecting surveys where albatrosses were genuinely present.
+
+# Final Model Selection and Test Set Evaluation
+
+Based on the cross-validation results, we select Random Forest as our final model due to its highest mean ROC AUC. 
+
+```{r final-fit}
+# Fit final Random Forest on full training set; evaluate on held-out test set
+# last_fit() handles both steps in one call
+set.seed(rngseed)
+final_fit <- last_fit(
+  rf_final_workflow,
+  split   = split,
+  metrics = metric_set(roc_auc, accuracy, sens, spec)
+)
+
+# Report test set performance
+test_metrics <- collect_metrics(final_fit)
+kable(test_metrics,
+      caption = "Final Random Forest: Test Set Performance",
+      digits  = 3)
+```
+
+```{r test-roc, fig.cap="ROC curve on the held-out test set"}
+# Extract test predictions and plot ROC curve
+test_preds <- collect_predictions(final_fit)
+
+test_preds %>%
+  roc_curve(truth       = albatross_present,
+            .pred_present,
+            event_level = "second") %>%
+  autoplot() +
+  labs(title = "ROC Curve — Random Forest on Test Set") +
+  theme_minimal(base_size = 13)
+```
+
+The ROC curve bows clearly toward the upper-left corner, confirming the model performs well above random chance (AUC = 0.757 on the test set). 
+
+```{r test-confusion, fig.cap="Confusion matrix on the held-out test set"}
+# Confusion matrix: rows = truth, columns = predicted class
+conf_mat(test_preds,
+         truth    = albatross_present,
+         estimate = .pred_class) %>%
+  autoplot(type = "heatmap") +
+  labs(title = "Confusion Matrix — Random Forest on Test Set") +
+  theme_minimal(base_size = 13)
+```
+
+The confusion matrix shows that the model correctly identified many surveys with Wandering albatross present and absent, but it performed better for presence than for absence. In particular, the model correctly predicted 737 true presence cases and 564 true absence cases, while still making some false positive and false negative errors.
+
+# Discussion
+
+In this analysis, I examined whether season, latitude, wind speed class, and sea state class could predict the presence of Wandering Albatross during a 10-minute ship survey. The results showed that these environmental variables were moderately informative, and that Random Forest performed better than both standard logistic regression and LASSO logistic regression in cross-validation and on the held-out test set. This suggests that the relationship between environmental conditions and albatross presence may be more complex than a simple linear pattern.
+
+The exploratory analysis also showed clear differences in albatross presence across seasons, latitudes, wind classes, and sea states. Wandering Albatross sightings were more common in spring and winter, at more southern latitudes, and under rougher wind and sea conditions. However, predictive performance was still imperfect, which means these variables help explain albatross presence but do not fully determine it. However, predictive performance was still imperfect, meaning these variables help explain albatross presence but do not fully determine it, and additional variables such as oceanographic features would likely be needed to further improve predictive accuracy.
