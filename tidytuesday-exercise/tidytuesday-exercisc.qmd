@@ -1,0 +1,288 @@
+---
+title: "Tidy Tuesday Exercise"
+---
+
+## Loading data and initial exploration
+```{r, warning=FALSE}
+# Load packages
+library(tidyverse)
+library(tidymodels)
+library(GGally)
+library(here)
+library(knitr)
+
+# set seed 
+rngseed <- 1234
+set.seed(rngseed)
+
+# Load data
+d1 <- readRDS(here("ml-models-exercise", "clean-mavoglurant-data.rds"))
+
+# quick cheak
+glimpse(d1)
+summary(d1)
+```
+
+## Recode RACE and create BMI
+```{r}
+
+d1 <- d1 %>%
+  mutate(
+    BMI = WT / (HT^2),
+    RACE = as.character(RACE),
+    RACE = if_else(RACE %in% c("7", "88"), "3", RACE),
+    RACE = as.factor(RACE)
+  )
+glimpse(d1)
+summary(d1)
+```
+
+## Pairwise correlation plot
+```{r}
+# Select continuous variables for correlation analysis
+cont_vars <- d1 %>%
+  select(Y, AGE, WT, HT, BMI)
+
+# Create a pairwise correlation plot
+ggpairs(cont_vars)
+```
+
+## Create recipes and workflows for each model 
+```{r}
+# Create a recipe for all models
+# Outcome is Y, all other variables are predictors
+base_recipe <- recipe(Y ~ ., data = d1) %>%
+  # Create dummy variables for categorical predictors
+  step_dummy(all_nominal_predictors()) %>%
+  # Remove predictors with zero variance
+  step_zv(all_predictors()) %>%
+  # Normalize numeric predictors
+  step_normalize(all_numeric_predictors())
+```
+```{r}
+# Specify a linear regression model
+lm_spec <- linear_reg() %>%
+  set_engine("lm")
+
+# Specify a LASSO regression model with penalty fixed at 0.1
+lasso_spec <- linear_reg(
+  penalty = 0.1,
+  mixture = 1
+) %>%
+  set_engine("glmnet")
+
+# Specify a random forest model with default tuning settings
+# The seed is passed into the engine for reproducibility
+rf_spec <- rand_forest() %>%
+  set_engine("ranger", seed = rngseed) %>%
+  set_mode("regression")
+```
+```{r}
+# Create workflow for the linear model
+lm_wf <- workflow() %>%
+  add_recipe(base_recipe) %>%
+  add_model(lm_spec)
+
+# Create workflow for the LASSO model
+lasso_wf <- workflow() %>%
+  add_recipe(base_recipe) %>%
+  add_model(lasso_spec)
+
+# Create workflow for the random forest model
+rf_wf <- workflow() %>%
+  add_recipe(base_recipe) %>%
+  add_model(rf_spec)
+```
+
+##  Fit the models
+```{r}
+# Fit the linear model to the full dataset
+lm_fit <- fit(lm_wf, data = d1)
+
+# Fit the LASSO model to the full dataset
+lasso_fit <- fit(lasso_wf, data = d1)
+
+# Fit the random forest model to the full dataset
+rf_fit <- fit(rf_wf, data = d1)
+```
+
+## Generate predictions and compute RMSE
+```{r}
+# Generate predictions for the linear model
+lm_pred <- predict(lm_fit, new_data = d1) %>%
+  bind_cols(d1 %>% select(Y)) %>%
+  mutate(model = "Linear Model")
+
+# Compute RMSE for the linear model
+lm_rmse <- lm_pred %>%
+  rmse(truth = Y, estimate = .pred)
+
+# Generate predictions for the LASSO model
+lasso_pred <- predict(lasso_fit, new_data = d1) %>%
+  bind_cols(d1 %>% select(Y)) %>%
+  mutate(model = "LASSO")
+
+# Compute RMSE for the LASSO model
+lasso_rmse <- lasso_pred %>%
+  rmse(truth = Y, estimate = .pred)
+
+# Generate predictions for the random forest model
+rf_pred <- predict(rf_fit, new_data = d1) %>%
+  bind_cols(d1 %>% select(Y)) %>%
+  mutate(model = "Random Forest")
+
+# Compute RMSE for the random forest model
+rf_rmse <- rf_pred %>%
+  rmse(truth = Y, estimate = .pred)
+
+# Combine RMSE results into one table
+bind_rows(lm_rmse, lasso_rmse, rf_rmse)
+```
+
+## Observed vs predicted plots
+
+```{r}
+# Combine predictions from all models
+pred_all <- bind_rows(lm_pred, lasso_pred, rf_pred)
+
+# Create observed versus predicted plots
+ggplot(pred_all, aes(x = Y, y = .pred)) +
+  geom_point(alpha = 0.6) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  facet_wrap(~ model) +
+  labs(
+    title = "Observed versus Predicted Values",
+    x = "Observed Y",
+    y = "Predicted Y"
+  ) +
+  theme_bw()
+```
+
+As can be seen from the figure, the prediction points of the random forest are closer to the diagonal, indicating that its prediction is more accurate. While the prediction results of Lasso and the linear model are similar, because the penalty term of Lasso is smaller, it causes its coefficients to be close to those of the linear model.
+## Tune the LASSO model 
+```{r}
+# Create an apparent resample object
+# This uses the same data for both training and evaluation
+# It is intentionally incorrect for teaching purposes
+app_resamples <- apparent(d1)
+
+# Define a penalty grid for LASSO
+# The values range from 1e-5 to 1e2 on a log scale
+lasso_grid <- tibble(
+  penalty = 10^seq(-5, 2, length.out = 50)
+)
+
+# Specify a tunable LASSO model
+lasso_tune_spec <- linear_reg(
+  penalty = tune(),
+  mixture = 1
+) %>%
+  set_engine("glmnet")
+
+# Create a workflow for the tunable LASSO model
+lasso_tune_wf <- workflow() %>%
+  add_recipe(base_recipe) %>%
+  add_model(lasso_tune_spec)
+
+# Tune the LASSO model using apparent resamples
+lasso_tune_app <- tune_grid(
+  lasso_tune_wf,
+  resamples = app_resamples,
+  grid = lasso_grid,
+  metrics = metric_set(rmse)
+)
+
+# Show tuning metrics
+collect_metrics(lasso_tune_app)
+```
+
+## Tune the random forest model
+
+```{r}
+# Specify a tunable random forest model
+# We tune mtry and min_n, and fix the number of trees at 300
+rf_tune_spec <- rand_forest(
+  mtry = tune(),
+  min_n = tune(),
+  trees = 300
+) %>%
+  set_engine("ranger", seed = rngseed) %>%
+  set_mode("regression")
+
+# Create a workflow for the tunable random forest model
+rf_tune_wf <- workflow() %>%
+  add_recipe(base_recipe) %>%
+  add_model(rf_tune_spec)
+
+# Define a regular tuning grid for random forest
+# mtry ranges from 1 to 7
+# min_n ranges from 1 to 21
+# 7 levels are used for each parameter
+rf_grid <- grid_regular(
+  mtry(range = c(1L, 7L)),
+  min_n(range = c(1L, 21L)),
+  levels = 7
+)
+
+# Tune the random forest model using apparent resamples
+rf_tune_app <- tune_grid(
+  rf_tune_wf,
+  resamples = app_resamples,
+  grid = rf_grid,
+  metrics = metric_set(rmse)
+)
+
+# Show tuning metrics
+collect_metrics(rf_tune_app)
+```
+
+## LASSO and Random Forest tuning with cross-validation
+
+```{r}
+# Reset the random seed before creating cross-validation folds
+set.seed(rngseed)
+
+# Create 5-fold cross-validation repeated 5 times
+cv_folds <- vfold_cv(d1, v = 5, repeats = 5)
+```
+
+
+```{r}
+# Tune the LASSO model using repeated cross-validation
+lasso_tune_cv <- tune_grid(
+  lasso_tune_wf,
+  resamples = cv_folds,
+  grid = lasso_grid,
+  metrics = metric_set(rmse)
+)
+
+# Plot tuning results from repeated CV
+autoplot(lasso_tune_cv)
+
+# Show tuning metrics
+collect_metrics(lasso_tune_cv)
+
+# Show the best penalty value based on RMSE
+show_best(lasso_tune_cv, metric = "rmse")
+```
+
+```{r}
+# Tune the random forest model using repeated cross-validation
+rf_tune_cv <- tune_grid(
+  rf_tune_wf,
+  resamples = cv_folds,
+  grid = rf_grid,
+  metrics = metric_set(rmse)
+)
+
+# Plot tuning results from repeated CV
+autoplot(rf_tune_cv)
+
+# Show tuning metrics
+collect_metrics(rf_tune_cv)
+
+# Show the best tuning parameter combination based on RMSE
+show_best(rf_tune_cv, metric = "rmse")
+```
+
+Overall, the results show that model flexibility can improve performance, but proper evaluation matters. In the initial full-data fit, the random forest produced predictions closest to the observed values, while the LASSO and linear model performed almost identically. The LASSO tuning results showed that very small penalty values gave the lowest RMSE, which makes sense because a small penalty makes the LASSO behave similarly to ordinary linear regression. As the penalty increased, RMSE rose because stronger regularization shrank the coefficients too much and reduced predictive accuracy. For the random forest, better performance was observed when more features were considered at each split and smaller node sizes were allowed, suggesting that a more flexible tree structure fit the data better. However, the tuning results from apparent resampling were overly optimistic because the same data were used for both training and evaluation, which is why cross-validation is essential for reliable model assessment. The cross-validation results provided more realistic estimates of predictive performance and showed that the random forest remained the best-performing model overall.
