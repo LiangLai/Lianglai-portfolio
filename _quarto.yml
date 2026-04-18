@@ -25,7 +25,7 @@ website:
           - text: "Machine Learning"
             file: ml-models-exercise/ml-models-exercise.qmd
           - text: "tidytuesday-exercise"
-            file: tidytuesday-exercise/tidytuesday-exercisc.qmd
+            file: tidytuesday-exercise/tidytuesday-exercise.qmd
     right:
       - icon: github 
         href: https://github.com/LiangLai/Lianglai-portfolio   
