@@ -2,13 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.26">
+<meta name="generator" content="quarto-1.9.36">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
 <title>presentation-exercise (Week6) – LiangLai Data Analysis Portfolio</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -67,15 +70,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-a0f9fd0d421825b736dc1bbcbcba2219.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -158,6 +160,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../fitting-exercise/fitting-exercise.html">
  <span class="dropdown-text">Fitting Exercise</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../ml-models-exercise/ml-models-exercise.html">
+ <span class="dropdown-text">Machine Learning</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../tidytuesday-exercise/tidytuesday-exercise.html">
+ <span class="dropdown-text">tidytuesday-exercise</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -213,9 +223,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.2.0     ✔ readr     2.1.6
+✔ dplyr     1.2.0     ✔ readr     2.2.0
 ✔ forcats   1.0.1     ✔ stringr   1.6.0
-✔ ggplot2   4.0.1     ✔ tibble    3.3.1
+✔ ggplot2   4.0.2     ✔ tibble    3.3.1
 ✔ lubridate 1.9.5     ✔ tidyr     1.3.2
 ✔ purrr     1.2.1     
 ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
@@ -226,7 +236,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>here() starts at C:/Users/PC/Documents/GitHub/lianglai-portfolio</code></pre>
+<pre><code>here() starts at D:/Github/Lianglai-portfolio</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) Read the FiveThirtyEight/NCAA tournament history dataset</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>raw <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
@@ -455,124 +465,129 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Write R code to create a professional summary table from the NCAA basketball dataset that includes automatically calculated statistics, bold text, conditional color formatting, a spanner header, a footnote, a caption, and inline sparklines.</p>
 <div class="cell" data-waring="false">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load table formatting packages</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gtExtras)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) Process data: Calculate summary statistics for the top 5 schools (by total wins)</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># and create a list column of their historical win trends for the sparkline.</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>top_schools_summary <span class="ot">&lt;-</span> raw <span class="sc">%&gt;%</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter for recent history to make sparklines legible (e.g., 2000 onwards)</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">&gt;=</span> <span class="dv">2000</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">tourney_w =</span> <span class="fu">as.numeric</span>(<span class="st">`</span><span class="at">Tourney W</span><span class="st">`</span>),</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">seed =</span> <span class="fu">as.numeric</span>(Seed)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove NA rows that might break calculations</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(tourney_w), <span class="sc">!</span><span class="fu">is.na</span>(seed)) <span class="sc">%&gt;%</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(School) <span class="sc">%&gt;%</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">Appearances =</span> <span class="fu">n</span>(),</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">Total_Wins =</span> <span class="fu">sum</span>(tourney_w),</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">Avg_Wins_per_Tourney =</span> Total_Wins <span class="sc">/</span> Appearances,</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">Avg_Seed =</span> <span class="fu">mean</span>(seed),</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create a list of wins ordered by year for the sparkline</span></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">Wins_History =</span> <span class="fu">list</span>(tourney_w[<span class="fu">order</span>(Year)]),</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Keep only the top 5 schools with the most wins since 2000</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(<span class="at">order_by =</span> Total_Wins, <span class="at">n =</span> <span class="dv">5</span>)</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>top_schools_summary <span class="ot">&lt;-</span> top_schools_summary <span class="sc">%&gt;%</span></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">School =</span> stringr<span class="sc">::</span><span class="fu">str_replace_all</span>(School, <span class="st">" "</span>, <span class="st">"\u00A0"</span>))</span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) Build the gt table</span></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>top_schools_table <span class="ot">&lt;-</span> top_schools_summary <span class="sc">%&gt;%</span></span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># A descriptive caption/title explaining the summary</span></span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_header</span>(</span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">md</span>(<span class="st">"**Modern Era Dominance: Top 5 NCAA Women's Programs**"</span>),</span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Tournament performance summary (2000–2018)"</span></span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_caption</span>(</span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Caption: This table summarizes 2000–2018 NCAA tournament performance for the top five women’s programs by total wins. Higher W/App indicates more wins per appearance, while lower Avg Seed indicates stronger seeding; sparklines show wins by year."</span></span>
-<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Spanning column header</span></span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_spanner</span>(</span>
-<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">"Historical Performance Metrics"</span>,</span>
-<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">c</span>(Total_Wins, Avg_Seed, Wins_History)</span>
-<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Formatted text: Bold the school names</span></span>
-<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_style</span>(</span>
-<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">style =</span> <span class="fu">cell_text</span>(<span class="at">weight =</span> <span class="st">"bold"</span>),</span>
-<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_body</span>(<span class="at">columns =</span> School)</span>
-<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Conditional formatting: Color the average seed</span></span>
-<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Green is better (lower number), Red is worse (higher number)</span></span>
-<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data_color</span>(</span>
-<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> Avg_Seed,</span>
-<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">colors =</span> scales<span class="sc">::</span><span class="fu">col_numeric</span>(</span>
-<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>      <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"#1a9850"</span>, <span class="st">"#ffffbf"</span>, <span class="st">"#d73027"</span>),</span>
-<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>      <span class="at">domain =</span> <span class="fu">range</span>(top_schools_summary<span class="sc">$</span>Avg_Wins_per_Tourney, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), </span>
-<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Advanced feature: Inline sparklines showing win trends over the years</span></span>
-<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt_plt_sparkline</span>(</span>
-<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">column =</span> Wins_History,</span>
-<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">"shaded"</span>,</span>
-<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">fig_dim =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">40</span>),</span>
-<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"black"</span>, <span class="st">"blue"</span>, <span class="st">"red"</span>, <span class="st">"lightgrey"</span>) </span>
-<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rename columns for better readability</span></span>
-<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_label</span>(</span>
-<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a>    <span class="at">Appearances =</span> <span class="st">"Apps"</span>,</span>
-<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a>    <span class="at">Total_Wins =</span> <span class="st">"Total W"</span>,</span>
-<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a>    <span class="at">Avg_Wins_per_Tourney =</span> <span class="st">"W/App"</span>,</span>
-<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a>    <span class="at">Avg_Seed =</span> <span class="st">"Avg Seed"</span>,</span>
-<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a>    <span class="at">Wins_History =</span> <span class="st">"Trend"</span></span>
-<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Format numbers to 1 decimal place</span></span>
-<span id="cb8-83"><a href="#cb8-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
-<span id="cb8-84"><a href="#cb8-84" aria-hidden="true" tabindex="-1"></a>  <span class="at">columns =</span> <span class="fu">c</span>(Avg_Seed, Avg_Wins_per_Tourney),</span>
-<span id="cb8-85"><a href="#cb8-85" aria-hidden="true" tabindex="-1"></a>  <span class="at">decimals =</span> <span class="dv">1</span></span>
-<span id="cb8-86"><a href="#cb8-86" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-87"><a href="#cb8-87" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
-<span id="cb8-88"><a href="#cb8-88" aria-hidden="true" tabindex="-1"></a>  <span class="at">columns =</span> Avg_Wins_per_Tourney,</span>
-<span id="cb8-89"><a href="#cb8-89" aria-hidden="true" tabindex="-1"></a>  <span class="at">decimals =</span> <span class="dv">2</span></span>
-<span id="cb8-90"><a href="#cb8-90" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-91"><a href="#cb8-91" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-92"><a href="#cb8-92" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add a correctly attributed footnote</span></span>
-<span id="cb8-93"><a href="#cb8-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_footnote</span>(</span>
-<span id="cb8-94"><a href="#cb8-94" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"All statistics are automatically calculated using NCAA tournament appearances from 2000–2018."</span>,</span>
-<span id="cb8-95"><a href="#cb8-95" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_column_labels</span>(<span class="at">columns =</span> <span class="fu">c</span>(Appearances, Total_Wins, Avg_Wins_per_Tourney, Avg_Seed))</span>
-<span id="cb8-96"><a href="#cb8-96" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-97"><a href="#cb8-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_footnote</span>(</span>
-<span id="cb8-98"><a href="#cb8-98" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"Apps = number of NCAA tournament appearances (2000–2018)."</span>,</span>
-<span id="cb8-99"><a href="#cb8-99" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_column_labels</span>(<span class="at">columns =</span> Appearances)</span>
-<span id="cb8-100"><a href="#cb8-100" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-101"><a href="#cb8-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_footnote</span>(</span>
-<span id="cb8-102"><a href="#cb8-102" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"Total W = total NCAA tournament wins summed across appearances (2000–2018)."</span>,</span>
-<span id="cb8-103"><a href="#cb8-103" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_column_labels</span>(<span class="at">columns =</span> Total_Wins)</span>
-<span id="cb8-104"><a href="#cb8-104" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-105"><a href="#cb8-105" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_footnote</span>(</span>
-<span id="cb8-106"><a href="#cb8-106" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"W/App = Total W ÷ Apps (average wins per tournament appearance)."</span>,</span>
-<span id="cb8-107"><a href="#cb8-107" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_column_labels</span>(<span class="at">columns =</span> Avg_Wins_per_Tourney)</span>
-<span id="cb8-108"><a href="#cb8-108" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-109"><a href="#cb8-109" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_footnote</span>(</span>
-<span id="cb8-110"><a href="#cb8-110" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"Avg Seed = average NCAA seed across appearances (lower is better)."</span>,</span>
-<span id="cb8-111"><a href="#cb8-111" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_column_labels</span>(<span class="at">columns =</span> Avg_Seed)</span>
-<span id="cb8-112"><a href="#cb8-112" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-113"><a href="#cb8-113" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_footnote</span>(</span>
-<span id="cb8-114"><a href="#cb8-114" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"Trend = wins per year (2000–2018)."</span>,</span>
-<span id="cb8-115"><a href="#cb8-115" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_column_labels</span>(<span class="at">columns =</span> Wins_History)</span>
-<span id="cb8-116"><a href="#cb8-116" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-117"><a href="#cb8-117" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-118"><a href="#cb8-118" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Apply a clean theme</span></span>
-<span id="cb8-119"><a href="#cb8-119" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt_theme_538</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'gt' was built under R version 4.4.3</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gtExtras)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'gtExtras' was built under R version 4.4.3</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) Process data: Calculate summary statistics for the top 5 schools (by total wins)</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># and create a list column of their historical win trends for the sparkline.</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>top_schools_summary <span class="ot">&lt;-</span> raw <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter for recent history to make sparklines legible (e.g., 2000 onwards)</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">&gt;=</span> <span class="dv">2000</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">tourney_w =</span> <span class="fu">as.numeric</span>(<span class="st">`</span><span class="at">Tourney W</span><span class="st">`</span>),</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">seed =</span> <span class="fu">as.numeric</span>(Seed)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove NA rows that might break calculations</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(tourney_w), <span class="sc">!</span><span class="fu">is.na</span>(seed)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(School) <span class="sc">%&gt;%</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">Appearances =</span> <span class="fu">n</span>(),</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">Total_Wins =</span> <span class="fu">sum</span>(tourney_w),</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">Avg_Wins_per_Tourney =</span> Total_Wins <span class="sc">/</span> Appearances,</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">Avg_Seed =</span> <span class="fu">mean</span>(seed),</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create a list of wins ordered by year for the sparkline</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">Wins_History =</span> <span class="fu">list</span>(tourney_w[<span class="fu">order</span>(Year)]),</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Keep only the top 5 schools with the most wins since 2000</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(<span class="at">order_by =</span> Total_Wins, <span class="at">n =</span> <span class="dv">5</span>)</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>top_schools_summary <span class="ot">&lt;-</span> top_schools_summary <span class="sc">%&gt;%</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">School =</span> stringr<span class="sc">::</span><span class="fu">str_replace_all</span>(School, <span class="st">" "</span>, <span class="st">"\u00A0"</span>))</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) Build the gt table</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>top_schools_table <span class="ot">&lt;-</span> top_schools_summary <span class="sc">%&gt;%</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>  <span class="co"># A descriptive caption/title explaining the summary</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_header</span>(</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">md</span>(<span class="st">"**Modern Era Dominance: Top 5 NCAA Women's Programs**"</span>),</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Tournament performance summary (2000–2018)"</span></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_caption</span>(</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Caption: This table summarizes 2000–2018 NCAA tournament performance for the top five women’s programs by total wins. Higher W/App indicates more wins per appearance, while lower Avg Seed indicates stronger seeding; sparklines show wins by year."</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Spanning column header</span></span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_spanner</span>(</span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">"Historical Performance Metrics"</span>,</span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">c</span>(Total_Wins, Avg_Seed, Wins_History)</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Formatted text: Bold the school names</span></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_style</span>(</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">style =</span> <span class="fu">cell_text</span>(<span class="at">weight =</span> <span class="st">"bold"</span>),</span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_body</span>(<span class="at">columns =</span> School)</span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Conditional formatting: Color the average seed</span></span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Green is better (lower number), Red is worse (higher number)</span></span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data_color</span>(</span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> Avg_Seed,</span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">colors =</span> scales<span class="sc">::</span><span class="fu">col_numeric</span>(</span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>      <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"#1a9850"</span>, <span class="st">"#ffffbf"</span>, <span class="st">"#d73027"</span>),</span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>      <span class="at">domain =</span> <span class="fu">range</span>(top_schools_summary<span class="sc">$</span>Avg_Wins_per_Tourney, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), </span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Advanced feature: Inline sparklines showing win trends over the years</span></span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt_plt_sparkline</span>(</span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">column =</span> Wins_History,</span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">"shaded"</span>,</span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a>    <span class="at">fig_dim =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">40</span>),</span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"black"</span>, <span class="st">"blue"</span>, <span class="st">"red"</span>, <span class="st">"lightgrey"</span>) </span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rename columns for better readability</span></span>
+<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_label</span>(</span>
+<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">Appearances =</span> <span class="st">"Apps"</span>,</span>
+<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">Total_Wins =</span> <span class="st">"Total W"</span>,</span>
+<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">Avg_Wins_per_Tourney =</span> <span class="st">"W/App"</span>,</span>
+<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">Avg_Seed =</span> <span class="st">"Avg Seed"</span>,</span>
+<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a>    <span class="at">Wins_History =</span> <span class="st">"Trend"</span></span>
+<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-78"><a href="#cb12-78" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Format numbers to 1 decimal place</span></span>
+<span id="cb12-79"><a href="#cb12-79" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
+<span id="cb12-80"><a href="#cb12-80" aria-hidden="true" tabindex="-1"></a>  <span class="at">columns =</span> <span class="fu">c</span>(Avg_Seed, Avg_Wins_per_Tourney),</span>
+<span id="cb12-81"><a href="#cb12-81" aria-hidden="true" tabindex="-1"></a>  <span class="at">decimals =</span> <span class="dv">1</span></span>
+<span id="cb12-82"><a href="#cb12-82" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-83"><a href="#cb12-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
+<span id="cb12-84"><a href="#cb12-84" aria-hidden="true" tabindex="-1"></a>  <span class="at">columns =</span> Avg_Wins_per_Tourney,</span>
+<span id="cb12-85"><a href="#cb12-85" aria-hidden="true" tabindex="-1"></a>  <span class="at">decimals =</span> <span class="dv">2</span></span>
+<span id="cb12-86"><a href="#cb12-86" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-87"><a href="#cb12-87" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-88"><a href="#cb12-88" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add a correctly attributed footnote</span></span>
+<span id="cb12-89"><a href="#cb12-89" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_footnote</span>(</span>
+<span id="cb12-90"><a href="#cb12-90" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"All statistics are automatically calculated using NCAA tournament appearances from 2000–2018."</span>,</span>
+<span id="cb12-91"><a href="#cb12-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_column_labels</span>(<span class="at">columns =</span> <span class="fu">c</span>(Appearances, Total_Wins, Avg_Wins_per_Tourney, Avg_Seed))</span>
+<span id="cb12-92"><a href="#cb12-92" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-93"><a href="#cb12-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_footnote</span>(</span>
+<span id="cb12-94"><a href="#cb12-94" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"Apps = number of NCAA tournament appearances (2000–2018)."</span>,</span>
+<span id="cb12-95"><a href="#cb12-95" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_column_labels</span>(<span class="at">columns =</span> Appearances)</span>
+<span id="cb12-96"><a href="#cb12-96" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-97"><a href="#cb12-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_footnote</span>(</span>
+<span id="cb12-98"><a href="#cb12-98" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"Total W = total NCAA tournament wins summed across appearances (2000–2018)."</span>,</span>
+<span id="cb12-99"><a href="#cb12-99" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_column_labels</span>(<span class="at">columns =</span> Total_Wins)</span>
+<span id="cb12-100"><a href="#cb12-100" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-101"><a href="#cb12-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_footnote</span>(</span>
+<span id="cb12-102"><a href="#cb12-102" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"W/App = Total W ÷ Apps (average wins per tournament appearance)."</span>,</span>
+<span id="cb12-103"><a href="#cb12-103" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_column_labels</span>(<span class="at">columns =</span> Avg_Wins_per_Tourney)</span>
+<span id="cb12-104"><a href="#cb12-104" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-105"><a href="#cb12-105" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_footnote</span>(</span>
+<span id="cb12-106"><a href="#cb12-106" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"Avg Seed = average NCAA seed across appearances (lower is better)."</span>,</span>
+<span id="cb12-107"><a href="#cb12-107" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_column_labels</span>(<span class="at">columns =</span> Avg_Seed)</span>
+<span id="cb12-108"><a href="#cb12-108" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-109"><a href="#cb12-109" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_footnote</span>(</span>
+<span id="cb12-110"><a href="#cb12-110" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"Trend = wins per year (2000–2018)."</span>,</span>
+<span id="cb12-111"><a href="#cb12-111" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_column_labels</span>(<span class="at">columns =</span> Wins_History)</span>
+<span id="cb12-112"><a href="#cb12-112" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-113"><a href="#cb12-113" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-114"><a href="#cb12-114" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Apply a clean theme</span></span>
+<span id="cb12-115"><a href="#cb12-115" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt_theme_538</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Since gt v0.9.0, the `colors` argument has been deprecated.
 • Please use the `fn` argument instead.
@@ -582,33 +597,33 @@ This warning is displayed once every 8 hours.</code></pre>
 <pre><code>Warning: Some values were outside the color scale and will be treated as NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Table has no assigned ID, using random ID 'mbwsvblkix' to apply `gt::opt_css()`
+<pre><code>Table has no assigned ID, using random ID 'wsxgewghjf' to apply `gt::opt_css()`
 Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TRUE)`</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the table</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>top_schools_table </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the table</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>top_schools_table </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div id="mbwsvblkix" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="wsxgewghjf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>@import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Cairo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-#mbwsvblkix table {
+#wsxgewghjf table {
   font-family: Cairo, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#mbwsvblkix thead, #mbwsvblkix tbody, #mbwsvblkix tfoot, #mbwsvblkix tr, #mbwsvblkix td, #mbwsvblkix th {
+#wsxgewghjf thead, #wsxgewghjf tbody, #wsxgewghjf tfoot, #wsxgewghjf tr, #wsxgewghjf td, #wsxgewghjf th {
   border-style: none;
 }
 
-#mbwsvblkix p {
+#wsxgewghjf p {
   margin: 0;
   padding: 0;
 }
 
-#mbwsvblkix .gt_table {
+#wsxgewghjf .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -634,12 +649,12 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   border-left-color: #D3D3D3;
 }
 
-#mbwsvblkix .gt_caption {
+#wsxgewghjf .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#mbwsvblkix .gt_title {
+#wsxgewghjf .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -651,7 +666,7 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   border-bottom-width: 0;
 }
 
-#mbwsvblkix .gt_subtitle {
+#wsxgewghjf .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -663,7 +678,7 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   border-top-width: 0;
 }
 
-#mbwsvblkix .gt_heading {
+#wsxgewghjf .gt_heading {
   background-color: #FFFFFF;
   text-align: left;
   border-bottom-color: #FFFFFF;
@@ -675,13 +690,13 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   border-right-color: #D3D3D3;
 }
 
-#mbwsvblkix .gt_bottom_border {
+#wsxgewghjf .gt_bottom_border {
   border-bottom-style: none;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#mbwsvblkix .gt_col_headings {
+#wsxgewghjf .gt_col_headings {
   border-top-style: none;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -696,7 +711,7 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   border-right-color: #D3D3D3;
 }
 
-#mbwsvblkix .gt_col_heading {
+#wsxgewghjf .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -716,7 +731,7 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   overflow-x: hidden;
 }
 
-#mbwsvblkix .gt_column_spanner_outer {
+#wsxgewghjf .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -728,15 +743,15 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   padding-right: 4px;
 }
 
-#mbwsvblkix .gt_column_spanner_outer:first-child {
+#wsxgewghjf .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#mbwsvblkix .gt_column_spanner_outer:last-child {
+#wsxgewghjf .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#mbwsvblkix .gt_column_spanner {
+#wsxgewghjf .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #000000;
@@ -748,11 +763,11 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   width: 100%;
 }
 
-#mbwsvblkix .gt_spanner_row {
+#wsxgewghjf .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#mbwsvblkix .gt_group_heading {
+#wsxgewghjf .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -778,7 +793,7 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   text-align: left;
 }
 
-#mbwsvblkix .gt_empty_group_heading {
+#wsxgewghjf .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -793,15 +808,15 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   vertical-align: middle;
 }
 
-#mbwsvblkix .gt_from_md > :first-child {
+#wsxgewghjf .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#mbwsvblkix .gt_from_md > :last-child {
+#wsxgewghjf .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#mbwsvblkix .gt_row {
+#wsxgewghjf .gt_row {
   padding-top: 3px;
   padding-bottom: 3px;
   padding-left: 5px;
@@ -820,7 +835,7 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   overflow-x: hidden;
 }
 
-#mbwsvblkix .gt_stub {
+#wsxgewghjf .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -833,7 +848,7 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   padding-right: 5px;
 }
 
-#mbwsvblkix .gt_stub_row_group {
+#wsxgewghjf .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -847,15 +862,15 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   vertical-align: top;
 }
 
-#mbwsvblkix .gt_row_group_first td {
+#wsxgewghjf .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#mbwsvblkix .gt_row_group_first th {
+#wsxgewghjf .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#mbwsvblkix .gt_summary_row {
+#wsxgewghjf .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -865,16 +880,16 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   padding-right: 5px;
 }
 
-#mbwsvblkix .gt_first_summary_row {
+#wsxgewghjf .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#mbwsvblkix .gt_first_summary_row.thick {
+#wsxgewghjf .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#mbwsvblkix .gt_last_summary_row {
+#wsxgewghjf .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -884,7 +899,7 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   border-bottom-color: #D3D3D3;
 }
 
-#mbwsvblkix .gt_grand_summary_row {
+#wsxgewghjf .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -894,7 +909,7 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   padding-right: 5px;
 }
 
-#mbwsvblkix .gt_first_grand_summary_row {
+#wsxgewghjf .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -904,7 +919,7 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   border-top-color: #D3D3D3;
 }
 
-#mbwsvblkix .gt_last_grand_summary_row_top {
+#wsxgewghjf .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -914,11 +929,11 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   border-bottom-color: #D3D3D3;
 }
 
-#mbwsvblkix .gt_striped {
+#wsxgewghjf .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#mbwsvblkix .gt_table_body {
+#wsxgewghjf .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -927,7 +942,7 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   border-bottom-color: #D3D3D3;
 }
 
-#mbwsvblkix .gt_footnotes {
+#wsxgewghjf .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -941,7 +956,7 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   border-right-color: #D3D3D3;
 }
 
-#mbwsvblkix .gt_footnote {
+#wsxgewghjf .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -950,7 +965,7 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   padding-right: 5px;
 }
 
-#mbwsvblkix .gt_sourcenotes {
+#wsxgewghjf .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -964,7 +979,7 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   border-right-color: #D3D3D3;
 }
 
-#mbwsvblkix .gt_sourcenote {
+#wsxgewghjf .gt_sourcenote {
   font-size: 12px;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -972,76 +987,76 @@ Avoid this message by assigning an ID: `gt(id = '')` or `gt_theme_538(quiet = TR
   padding-right: 5px;
 }
 
-#mbwsvblkix .gt_left {
+#wsxgewghjf .gt_left {
   text-align: left;
 }
 
-#mbwsvblkix .gt_center {
+#wsxgewghjf .gt_center {
   text-align: center;
 }
 
-#mbwsvblkix .gt_right {
+#wsxgewghjf .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#mbwsvblkix .gt_font_normal {
+#wsxgewghjf .gt_font_normal {
   font-weight: normal;
 }
 
-#mbwsvblkix .gt_font_bold {
+#wsxgewghjf .gt_font_bold {
   font-weight: bold;
 }
 
-#mbwsvblkix .gt_font_italic {
+#wsxgewghjf .gt_font_italic {
   font-style: italic;
 }
 
-#mbwsvblkix .gt_super {
+#wsxgewghjf .gt_super {
   font-size: 65%;
 }
 
-#mbwsvblkix .gt_footnote_marks {
+#wsxgewghjf .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#mbwsvblkix .gt_asterisk {
+#wsxgewghjf .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#mbwsvblkix .gt_indent_1 {
+#wsxgewghjf .gt_indent_1 {
   text-indent: 5px;
 }
 
-#mbwsvblkix .gt_indent_2 {
+#wsxgewghjf .gt_indent_2 {
   text-indent: 10px;
 }
 
-#mbwsvblkix .gt_indent_3 {
+#wsxgewghjf .gt_indent_3 {
   text-indent: 15px;
 }
 
-#mbwsvblkix .gt_indent_4 {
+#wsxgewghjf .gt_indent_4 {
   text-indent: 20px;
 }
 
-#mbwsvblkix .gt_indent_5 {
+#wsxgewghjf .gt_indent_5 {
   text-indent: 25px;
 }
 
-#mbwsvblkix .katex-display {
+#wsxgewghjf .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#mbwsvblkix div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#wsxgewghjf div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 
-#mbwsvblkix tbody tr:last-child {
+#wsxgewghjf tbody tr:last-child {
   border-bottom: 2px solid #ffffff00;
 }
 </style>
@@ -1084,9 +1099,7 @@ Historical Performance Metrics
 <td class="gt_row gt_right" headers="Total_Wins">92</td>
 <td class="gt_row gt_right" headers="Avg_Seed" style="background-color: #808080; color: #FFFFFF">1.2</td>
 <td class="gt_row gt_center" headers="Wins_History"><svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="113.39pt" height="28.35pt" viewbox="0 0 113.39 28.35">
-<g class="svglite"><defs>
-<style type="text/css">    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {      fill: none;      stroke: #000000;      stroke-linecap: round;      stroke-linejoin: round;      stroke-miterlimit: 10.00;    }    .svglite text {      white-space: pre;    }    .svglite g.glyphgroup path {      fill: inherit;      stroke: none;    }  </style>
-</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs> <clippath id="cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ=="> <rect x="0.00" y="0.00" width="113.39" height="28.35"></rect> </clippath></defs><g clip-path="url(#cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ==)"><rect x="0.00" y="0.0000000000000036" width="113.39" height="28.35" style="stroke-width: 0.00; stroke: none;"></rect><polygon points="8.44,3.67 12.83,10.67 17.22,3.67 21.60,3.67 25.99,3.67 30.38,17.67 34.76,14.17 39.15,14.17 43.53,10.67 47.92,3.67 52.31,3.67 56.69,10.67 61.08,10.67 65.47,3.67 69.85,3.67 74.24,3.67 78.62,3.67 83.01,10.67 87.40,10.67 87.40,24.67 83.01,24.67 78.62,24.67 74.24,24.67 69.85,24.67 65.47,24.67 61.08,24.67 56.69,24.67 52.31,24.67 47.92,24.67 43.53,24.67 39.15,24.67 34.76,24.67 30.38,24.67 25.99,24.67 21.60,24.67 17.22,24.67 12.83,24.67 8.44,24.67 " style="stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #D3D3D3; fill-opacity: 0.75;"></polygon><polyline points="8.44,3.67 12.83,10.67 17.22,3.67 21.60,3.67 25.99,3.67 30.38,17.67 34.76,14.17 39.15,14.17 43.53,10.67 47.92,3.67 52.31,3.67 56.69,10.67 61.08,10.67 65.47,3.67 69.85,3.67 74.24,3.67 78.62,3.67 83.01,10.67 87.40,10.67 " style="stroke-width: 1.07; stroke: none; stroke-linecap: butt;"></polyline><text x="91.56" y="12.71" style="font-size: 5.69px; font-family: &quot;Arial&quot;;" textlength="7.89px" lengthadjust="spacingAndGlyphs">4.0</text><polyline points="8.44,3.67 12.83,10.67 17.22,3.67 21.60,3.67 25.99,3.67 30.38,17.67 34.76,14.17 39.15,14.17 43.53,10.67 47.92,3.67 52.31,3.67 56.69,10.67 61.08,10.67 65.47,3.67 69.85,3.67 74.24,3.67 78.62,3.67 83.01,10.67 87.40,10.67 " style="stroke-width: 1.07; stroke-linecap: butt;"></polyline><circle cx="87.40" cy="10.67" r="0.89" style="stroke-width: 0.71; fill: #000000;"></circle><circle cx="30.38" cy="17.67" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="8.44" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="17.22" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="21.60" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="25.99" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="47.92" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="52.31" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="65.47" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="69.85" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="74.24" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="78.62" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle></g></g>
+<g class="svglite"><defs> </defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs> <clippath id="cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ=="> <rect x="0.00" y="0.00" width="113.39" height="28.35"></rect> </clippath></defs><g clip-path="url(#cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ==)"><rect x="0.00" y="0.0000000000000036" width="113.39" height="28.35" style="stroke-width: 0.00; stroke: none;"></rect><polygon points="8.44,3.67 12.83,10.67 17.22,3.67 21.60,3.67 25.99,3.67 30.38,17.67 34.76,14.17 39.15,14.17 43.53,10.67 47.92,3.67 52.31,3.67 56.69,10.67 61.08,10.67 65.47,3.67 69.85,3.67 74.24,3.67 78.62,3.67 83.01,10.67 87.40,10.67 87.40,24.67 83.01,24.67 78.62,24.67 74.24,24.67 69.85,24.67 65.47,24.67 61.08,24.67 56.69,24.67 52.31,24.67 47.92,24.67 43.53,24.67 39.15,24.67 34.76,24.67 30.38,24.67 25.99,24.67 21.60,24.67 17.22,24.67 12.83,24.67 8.44,24.67 " style="stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #D3D3D3; fill-opacity: 0.75;"></polygon><polyline points="8.44,3.67 12.83,10.67 17.22,3.67 21.60,3.67 25.99,3.67 30.38,17.67 34.76,14.17 39.15,14.17 43.53,10.67 47.92,3.67 52.31,3.67 56.69,10.67 61.08,10.67 65.47,3.67 69.85,3.67 74.24,3.67 78.62,3.67 83.01,10.67 87.40,10.67 " style="stroke-width: 1.07; stroke: none; stroke-linecap: butt;"></polyline><text x="91.56" y="12.71" style="font-size: 5.69px; font-family: &quot;Arial&quot;;" textlength="7.89px" lengthadjust="spacingAndGlyphs">4.0</text><polyline points="8.44,3.67 12.83,10.67 17.22,3.67 21.60,3.67 25.99,3.67 30.38,17.67 34.76,14.17 39.15,14.17 43.53,10.67 47.92,3.67 52.31,3.67 56.69,10.67 61.08,10.67 65.47,3.67 69.85,3.67 74.24,3.67 78.62,3.67 83.01,10.67 87.40,10.67 " style="stroke-width: 1.07; stroke-linecap: butt;"></polyline><circle cx="87.40" cy="10.67" r="0.89" style="stroke-width: 0.71; fill: #000000;"></circle><circle cx="30.38" cy="17.67" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="8.44" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="17.22" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="21.60" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="25.99" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="47.92" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="52.31" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="65.47" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="69.85" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="74.24" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="78.62" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle></g></g>
 </svg></td>
 <td class="gt_row gt_right" headers="Avg_Wins_per_Tourney">4.84</td>
 </tr>
@@ -1096,9 +1109,7 @@ Historical Performance Metrics
 <td class="gt_row gt_right" headers="Total_Wins">61</td>
 <td class="gt_row gt_right" headers="Avg_Seed" style="background-color: #808080; color: #FFFFFF">2.1</td>
 <td class="gt_row gt_center" headers="Wins_History"><svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="113.39pt" height="28.35pt" viewbox="0 0 113.39 28.35">
-<g class="svglite"><defs>
-<style type="text/css">    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {      fill: none;      stroke: #000000;      stroke-linecap: round;      stroke-linejoin: round;      stroke-miterlimit: 10.00;    }    .svglite text {      white-space: pre;    }    .svglite g.glyphgroup path {      fill: inherit;      stroke: none;    }  </style>
-</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs> <clippath id="cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ=="> <rect x="0.00" y="0.00" width="113.39" height="28.35"></rect> </clippath></defs><g clip-path="url(#cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ==)"><rect x="0.00" y="0.0000000000000036" width="113.39" height="28.35" style="stroke-width: 0.00; stroke: none;"></rect><polygon points="8.44,7.17 12.83,17.67 17.22,10.67 21.60,7.17 25.99,7.17 30.38,10.67 34.76,14.17 39.15,3.67 43.53,3.67 47.92,24.67 52.31,17.67 56.69,14.17 61.08,14.17 65.47,14.17 69.85,17.67 74.24,14.17 78.62,14.17 83.01,21.17 87.40,21.17 87.40,24.67 83.01,24.67 78.62,24.67 74.24,24.67 69.85,24.67 65.47,24.67 61.08,24.67 56.69,24.67 52.31,24.67 47.92,24.67 43.53,24.67 39.15,24.67 34.76,24.67 30.38,24.67 25.99,24.67 21.60,24.67 17.22,24.67 12.83,24.67 8.44,24.67 " style="stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #D3D3D3; fill-opacity: 0.75;"></polygon><polyline points="8.44,7.17 12.83,17.67 17.22,10.67 21.60,7.17 25.99,7.17 30.38,10.67 34.76,14.17 39.15,3.67 43.53,3.67 47.92,24.67 52.31,17.67 56.69,14.17 61.08,14.17 65.47,14.17 69.85,17.67 74.24,14.17 78.62,14.17 83.01,21.17 87.40,21.17 " style="stroke-width: 1.07; stroke: none; stroke-linecap: butt;"></polyline><text x="91.56" y="23.21" style="font-size: 5.69px; font-family: &quot;Arial&quot;;" textlength="7.89px" lengthadjust="spacingAndGlyphs">1.0</text><polyline points="8.44,7.17 12.83,17.67 17.22,10.67 21.60,7.17 25.99,7.17 30.38,10.67 34.76,14.17 39.15,3.67 43.53,3.67 47.92,24.67 52.31,17.67 56.69,14.17 61.08,14.17 65.47,14.17 69.85,17.67 74.24,14.17 78.62,14.17 83.01,21.17 87.40,21.17 " style="stroke-width: 1.07; stroke-linecap: butt;"></polyline><circle cx="87.40" cy="21.17" r="0.89" style="stroke-width: 0.71; fill: #000000;"></circle><circle cx="47.92" cy="24.67" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="39.15" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="43.53" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle></g></g>
+<g class="svglite"><defs> </defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs> <clippath id="cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ=="> <rect x="0.00" y="0.00" width="113.39" height="28.35"></rect> </clippath></defs><g clip-path="url(#cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ==)"><rect x="0.00" y="0.0000000000000036" width="113.39" height="28.35" style="stroke-width: 0.00; stroke: none;"></rect><polygon points="8.44,7.17 12.83,17.67 17.22,10.67 21.60,7.17 25.99,7.17 30.38,10.67 34.76,14.17 39.15,3.67 43.53,3.67 47.92,24.67 52.31,17.67 56.69,14.17 61.08,14.17 65.47,14.17 69.85,17.67 74.24,14.17 78.62,14.17 83.01,21.17 87.40,21.17 87.40,24.67 83.01,24.67 78.62,24.67 74.24,24.67 69.85,24.67 65.47,24.67 61.08,24.67 56.69,24.67 52.31,24.67 47.92,24.67 43.53,24.67 39.15,24.67 34.76,24.67 30.38,24.67 25.99,24.67 21.60,24.67 17.22,24.67 12.83,24.67 8.44,24.67 " style="stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #D3D3D3; fill-opacity: 0.75;"></polygon><polyline points="8.44,7.17 12.83,17.67 17.22,10.67 21.60,7.17 25.99,7.17 30.38,10.67 34.76,14.17 39.15,3.67 43.53,3.67 47.92,24.67 52.31,17.67 56.69,14.17 61.08,14.17 65.47,14.17 69.85,17.67 74.24,14.17 78.62,14.17 83.01,21.17 87.40,21.17 " style="stroke-width: 1.07; stroke: none; stroke-linecap: butt;"></polyline><text x="91.56" y="23.21" style="font-size: 5.69px; font-family: &quot;Arial&quot;;" textlength="7.89px" lengthadjust="spacingAndGlyphs">1.0</text><polyline points="8.44,7.17 12.83,17.67 17.22,10.67 21.60,7.17 25.99,7.17 30.38,10.67 34.76,14.17 39.15,3.67 43.53,3.67 47.92,24.67 52.31,17.67 56.69,14.17 61.08,14.17 65.47,14.17 69.85,17.67 74.24,14.17 78.62,14.17 83.01,21.17 87.40,21.17 " style="stroke-width: 1.07; stroke-linecap: butt;"></polyline><circle cx="87.40" cy="21.17" r="0.89" style="stroke-width: 0.71; fill: #000000;"></circle><circle cx="47.92" cy="24.67" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="39.15" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="43.53" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle></g></g>
 </svg></td>
 <td class="gt_row gt_right" headers="Avg_Wins_per_Tourney">3.21</td>
 </tr>
@@ -1108,9 +1119,7 @@ Historical Performance Metrics
 <td class="gt_row gt_right" headers="Total_Wins">54</td>
 <td class="gt_row gt_right" headers="Avg_Seed" style="background-color: #FFF9B9; color: #000000">3.7</td>
 <td class="gt_row gt_center" headers="Wins_History"><svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="113.39pt" height="28.35pt" viewbox="0 0 113.39 28.35">
-<g class="svglite"><defs>
-<style type="text/css">    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {      fill: none;      stroke: #000000;      stroke-linecap: round;      stroke-linejoin: round;      stroke-miterlimit: 10.00;    }    .svglite text {      white-space: pre;    }    .svglite g.glyphgroup path {      fill: inherit;      stroke: none;    }  </style>
-</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs> <clippath id="cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ=="> <rect x="0.00" y="0.00" width="113.39" height="28.35"></rect> </clippath></defs><g clip-path="url(#cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ==)"><rect x="0.00" y="0.0000000000000036" width="113.39" height="28.35" style="stroke-width: 0.00; stroke: none;"></rect><polygon points="8.44,17.67 12.83,3.67 17.22,21.17 21.60,17.67 25.99,17.67 30.38,21.17 34.76,24.67 39.15,21.17 43.53,17.67 47.92,24.67 52.31,17.67 56.69,7.17 61.08,7.17 65.47,10.67 69.85,7.17 74.24,7.17 78.62,17.67 83.01,14.17 87.40,3.67 87.40,24.67 83.01,24.67 78.62,24.67 74.24,24.67 69.85,24.67 65.47,24.67 61.08,24.67 56.69,24.67 52.31,24.67 47.92,24.67 43.53,24.67 39.15,24.67 34.76,24.67 30.38,24.67 25.99,24.67 21.60,24.67 17.22,24.67 12.83,24.67 8.44,24.67 " style="stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #D3D3D3; fill-opacity: 0.75;"></polygon><polyline points="8.44,17.67 12.83,3.67 17.22,21.17 21.60,17.67 25.99,17.67 30.38,21.17 34.76,24.67 39.15,21.17 43.53,17.67 47.92,24.67 52.31,17.67 56.69,7.17 61.08,7.17 65.47,10.67 69.85,7.17 74.24,7.17 78.62,17.67 83.01,14.17 87.40,3.67 " style="stroke-width: 1.07; stroke: none; stroke-linecap: butt;"></polyline><text x="91.56" y="5.71" style="font-size: 5.69px; font-family: &quot;Arial&quot;;" textlength="7.89px" lengthadjust="spacingAndGlyphs">6.0</text><polyline points="8.44,17.67 12.83,3.67 17.22,21.17 21.60,17.67 25.99,17.67 30.38,21.17 34.76,24.67 39.15,21.17 43.53,17.67 47.92,24.67 52.31,17.67 56.69,7.17 61.08,7.17 65.47,10.67 69.85,7.17 74.24,7.17 78.62,17.67 83.01,14.17 87.40,3.67 " style="stroke-width: 1.07; stroke-linecap: butt;"></polyline><circle cx="87.40" cy="3.67" r="0.89" style="stroke-width: 0.71; fill: #000000;"></circle><circle cx="34.76" cy="24.67" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="47.92" cy="24.67" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="12.83" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="87.40" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle></g></g>
+<g class="svglite"><defs> </defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs> <clippath id="cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ=="> <rect x="0.00" y="0.00" width="113.39" height="28.35"></rect> </clippath></defs><g clip-path="url(#cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ==)"><rect x="0.00" y="0.0000000000000036" width="113.39" height="28.35" style="stroke-width: 0.00; stroke: none;"></rect><polygon points="8.44,17.67 12.83,3.67 17.22,21.17 21.60,17.67 25.99,17.67 30.38,21.17 34.76,24.67 39.15,21.17 43.53,17.67 47.92,24.67 52.31,17.67 56.69,7.17 61.08,7.17 65.47,10.67 69.85,7.17 74.24,7.17 78.62,17.67 83.01,14.17 87.40,3.67 87.40,24.67 83.01,24.67 78.62,24.67 74.24,24.67 69.85,24.67 65.47,24.67 61.08,24.67 56.69,24.67 52.31,24.67 47.92,24.67 43.53,24.67 39.15,24.67 34.76,24.67 30.38,24.67 25.99,24.67 21.60,24.67 17.22,24.67 12.83,24.67 8.44,24.67 " style="stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #D3D3D3; fill-opacity: 0.75;"></polygon><polyline points="8.44,17.67 12.83,3.67 17.22,21.17 21.60,17.67 25.99,17.67 30.38,21.17 34.76,24.67 39.15,21.17 43.53,17.67 47.92,24.67 52.31,17.67 56.69,7.17 61.08,7.17 65.47,10.67 69.85,7.17 74.24,7.17 78.62,17.67 83.01,14.17 87.40,3.67 " style="stroke-width: 1.07; stroke: none; stroke-linecap: butt;"></polyline><text x="91.56" y="5.71" style="font-size: 5.69px; font-family: &quot;Arial&quot;;" textlength="7.89px" lengthadjust="spacingAndGlyphs">6.0</text><polyline points="8.44,17.67 12.83,3.67 17.22,21.17 21.60,17.67 25.99,17.67 30.38,21.17 34.76,24.67 39.15,21.17 43.53,17.67 47.92,24.67 52.31,17.67 56.69,7.17 61.08,7.17 65.47,10.67 69.85,7.17 74.24,7.17 78.62,17.67 83.01,14.17 87.40,3.67 " style="stroke-width: 1.07; stroke-linecap: butt;"></polyline><circle cx="87.40" cy="3.67" r="0.89" style="stroke-width: 0.71; fill: #000000;"></circle><circle cx="34.76" cy="24.67" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="47.92" cy="24.67" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="12.83" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="87.40" cy="3.67" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle></g></g>
 </svg></td>
 <td class="gt_row gt_right" headers="Avg_Wins_per_Tourney">2.84</td>
 </tr>
@@ -1120,9 +1129,7 @@ Historical Performance Metrics
 <td class="gt_row gt_right" headers="Total_Wins">54</td>
 <td class="gt_row gt_right" headers="Avg_Seed" style="background-color: #9FCE89; color: #000000">3.2</td>
 <td class="gt_row gt_center" headers="Wins_History"><svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="113.39pt" height="28.35pt" viewbox="0 0 113.39 28.35">
-<g class="svglite"><defs>
-<style type="text/css">    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {      fill: none;      stroke: #000000;      stroke-linecap: round;      stroke-linejoin: round;      stroke-miterlimit: 10.00;    }    .svglite text {      white-space: pre;    }    .svglite g.glyphgroup path {      fill: inherit;      stroke: none;    }  </style>
-</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs> <clippath id="cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ=="> <rect x="0.00" y="0.00" width="113.39" height="28.35"></rect> </clippath></defs><g clip-path="url(#cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ==)"><rect x="0.00" y="0.0000000000000036" width="113.39" height="28.35" style="stroke-width: 0.00; stroke: none;"></rect><polygon points="8.44,21.17 12.83,21.17 17.22,17.67 21.60,21.17 25.99,14.17 30.38,14.17 34.76,14.17 39.15,21.17 43.53,7.17 47.92,10.67 52.31,7.17 56.69,10.67 61.08,10.67 65.47,17.67 69.85,10.67 74.24,17.67 78.62,14.17 83.01,10.67 87.40,17.67 87.40,24.67 83.01,24.67 78.62,24.67 74.24,24.67 69.85,24.67 65.47,24.67 61.08,24.67 56.69,24.67 52.31,24.67 47.92,24.67 43.53,24.67 39.15,24.67 34.76,24.67 30.38,24.67 25.99,24.67 21.60,24.67 17.22,24.67 12.83,24.67 8.44,24.67 " style="stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #D3D3D3; fill-opacity: 0.75;"></polygon><polyline points="8.44,21.17 12.83,21.17 17.22,17.67 21.60,21.17 25.99,14.17 30.38,14.17 34.76,14.17 39.15,21.17 43.53,7.17 47.92,10.67 52.31,7.17 56.69,10.67 61.08,10.67 65.47,17.67 69.85,10.67 74.24,17.67 78.62,14.17 83.01,10.67 87.40,17.67 " style="stroke-width: 1.07; stroke: none; stroke-linecap: butt;"></polyline><text x="91.56" y="19.71" style="font-size: 5.69px; font-family: &quot;Arial&quot;;" textlength="7.89px" lengthadjust="spacingAndGlyphs">2.0</text><polyline points="8.44,21.17 12.83,21.17 17.22,17.67 21.60,21.17 25.99,14.17 30.38,14.17 34.76,14.17 39.15,21.17 43.53,7.17 47.92,10.67 52.31,7.17 56.69,10.67 61.08,10.67 65.47,17.67 69.85,10.67 74.24,17.67 78.62,14.17 83.01,10.67 87.40,17.67 " style="stroke-width: 1.07; stroke-linecap: butt;"></polyline><circle cx="87.40" cy="17.67" r="0.89" style="stroke-width: 0.71; fill: #000000;"></circle><circle cx="8.44" cy="21.17" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="12.83" cy="21.17" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="21.60" cy="21.17" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="39.15" cy="21.17" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="43.53" cy="7.17" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="52.31" cy="7.17" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle></g></g>
+<g class="svglite"><defs> </defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs> <clippath id="cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ=="> <rect x="0.00" y="0.00" width="113.39" height="28.35"></rect> </clippath></defs><g clip-path="url(#cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ==)"><rect x="0.00" y="0.0000000000000036" width="113.39" height="28.35" style="stroke-width: 0.00; stroke: none;"></rect><polygon points="8.44,21.17 12.83,21.17 17.22,17.67 21.60,21.17 25.99,14.17 30.38,14.17 34.76,14.17 39.15,21.17 43.53,7.17 47.92,10.67 52.31,7.17 56.69,10.67 61.08,10.67 65.47,17.67 69.85,10.67 74.24,17.67 78.62,14.17 83.01,10.67 87.40,17.67 87.40,24.67 83.01,24.67 78.62,24.67 74.24,24.67 69.85,24.67 65.47,24.67 61.08,24.67 56.69,24.67 52.31,24.67 47.92,24.67 43.53,24.67 39.15,24.67 34.76,24.67 30.38,24.67 25.99,24.67 21.60,24.67 17.22,24.67 12.83,24.67 8.44,24.67 " style="stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #D3D3D3; fill-opacity: 0.75;"></polygon><polyline points="8.44,21.17 12.83,21.17 17.22,17.67 21.60,21.17 25.99,14.17 30.38,14.17 34.76,14.17 39.15,21.17 43.53,7.17 47.92,10.67 52.31,7.17 56.69,10.67 61.08,10.67 65.47,17.67 69.85,10.67 74.24,17.67 78.62,14.17 83.01,10.67 87.40,17.67 " style="stroke-width: 1.07; stroke: none; stroke-linecap: butt;"></polyline><text x="91.56" y="19.71" style="font-size: 5.69px; font-family: &quot;Arial&quot;;" textlength="7.89px" lengthadjust="spacingAndGlyphs">2.0</text><polyline points="8.44,21.17 12.83,21.17 17.22,17.67 21.60,21.17 25.99,14.17 30.38,14.17 34.76,14.17 39.15,21.17 43.53,7.17 47.92,10.67 52.31,7.17 56.69,10.67 61.08,10.67 65.47,17.67 69.85,10.67 74.24,17.67 78.62,14.17 83.01,10.67 87.40,17.67 " style="stroke-width: 1.07; stroke-linecap: butt;"></polyline><circle cx="87.40" cy="17.67" r="0.89" style="stroke-width: 0.71; fill: #000000;"></circle><circle cx="8.44" cy="21.17" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="12.83" cy="21.17" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="21.60" cy="21.17" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="39.15" cy="21.17" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="43.53" cy="7.17" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle><circle cx="52.31" cy="7.17" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle></g></g>
 </svg></td>
 <td class="gt_row gt_right" headers="Avg_Wins_per_Tourney">2.84</td>
 </tr>
@@ -1132,9 +1139,7 @@ Historical Performance Metrics
 <td class="gt_row gt_right" headers="Total_Wins">46</td>
 <td class="gt_row gt_right" headers="Avg_Seed" style="background-color: #808080; color: #FFFFFF">1.9</td>
 <td class="gt_row gt_center" headers="Wins_History"><svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="113.39pt" height="28.35pt" viewbox="0 0 113.39 28.35">
-<g class="svglite"><defs>
-<style type="text/css">    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {      fill: none;      stroke: #000000;      stroke-linecap: round;      stroke-linejoin: round;      stroke-miterlimit: 10.00;    }    .svglite text {      white-space: pre;    }    .svglite g.glyphgroup path {      fill: inherit;      stroke: none;    }  </style>
-</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs> <clippath id="cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ=="> <rect x="0.00" y="0.00" width="113.39" height="28.35"></rect> </clippath></defs><g clip-path="url(#cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ==)"><rect x="0.00" y="0.0000000000000036" width="113.39" height="28.35" style="stroke-width: 0.00; stroke: none;"></rect><polygon points="8.63,17.67 13.26,17.67 17.89,10.67 22.53,10.67 27.16,14.17 31.79,14.17 36.42,7.17 41.06,17.67 45.69,17.67 50.32,21.17 54.96,14.17 59.59,14.17 64.22,14.17 68.85,14.17 73.49,21.17 78.12,17.67 82.75,21.17 87.38,17.67 87.38,24.67 82.75,24.67 78.12,24.67 73.49,24.67 68.85,24.67 64.22,24.67 59.59,24.67 54.96,24.67 50.32,24.67 45.69,24.67 41.06,24.67 36.42,24.67 31.79,24.67 27.16,24.67 22.53,24.67 17.89,24.67 13.26,24.67 8.63,24.67 " style="stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #D3D3D3; fill-opacity: 0.75;"></polygon><polyline points="8.63,17.67 13.26,17.67 17.89,10.67 22.53,10.67 27.16,14.17 31.79,14.17 36.42,7.17 41.06,17.67 45.69,17.67 50.32,21.17 54.96,14.17 59.59,14.17 64.22,14.17 68.85,14.17 73.49,21.17 78.12,17.67 82.75,21.17 87.38,17.67 " style="stroke-width: 1.07; stroke: none; stroke-linecap: butt;"></polyline><text x="91.55" y="19.71" style="font-size: 5.69px; font-family: &quot;Arial&quot;;" textlength="7.89px" lengthadjust="spacingAndGlyphs">2.0</text><polyline points="8.63,17.67 13.26,17.67 17.89,10.67 22.53,10.67 27.16,14.17 31.79,14.17 36.42,7.17 41.06,17.67 45.69,17.67 50.32,21.17 54.96,14.17 59.59,14.17 64.22,14.17 68.85,14.17 73.49,21.17 78.12,17.67 82.75,21.17 87.38,17.67 " style="stroke-width: 1.07; stroke-linecap: butt;"></polyline><circle cx="87.38" cy="17.67" r="0.89" style="stroke-width: 0.71; fill: #000000;"></circle><circle cx="50.32" cy="21.17" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="73.49" cy="21.17" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="82.75" cy="21.17" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="36.42" cy="7.17" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle></g></g>
+<g class="svglite"><defs> </defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs> <clippath id="cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ=="> <rect x="0.00" y="0.00" width="113.39" height="28.35"></rect> </clippath></defs><g clip-path="url(#cpMC4wMHwxMTMuMzl8MC4wMHwyOC4zNQ==)"><rect x="0.00" y="0.0000000000000036" width="113.39" height="28.35" style="stroke-width: 0.00; stroke: none;"></rect><polygon points="8.63,17.67 13.26,17.67 17.89,10.67 22.53,10.67 27.16,14.17 31.79,14.17 36.42,7.17 41.06,17.67 45.69,17.67 50.32,21.17 54.96,14.17 59.59,14.17 64.22,14.17 68.85,14.17 73.49,21.17 78.12,17.67 82.75,21.17 87.38,17.67 87.38,24.67 82.75,24.67 78.12,24.67 73.49,24.67 68.85,24.67 64.22,24.67 59.59,24.67 54.96,24.67 50.32,24.67 45.69,24.67 41.06,24.67 36.42,24.67 31.79,24.67 27.16,24.67 22.53,24.67 17.89,24.67 13.26,24.67 8.63,24.67 " style="stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #D3D3D3; fill-opacity: 0.75;"></polygon><polyline points="8.63,17.67 13.26,17.67 17.89,10.67 22.53,10.67 27.16,14.17 31.79,14.17 36.42,7.17 41.06,17.67 45.69,17.67 50.32,21.17 54.96,14.17 59.59,14.17 64.22,14.17 68.85,14.17 73.49,21.17 78.12,17.67 82.75,21.17 87.38,17.67 " style="stroke-width: 1.07; stroke: none; stroke-linecap: butt;"></polyline><text x="91.55" y="19.71" style="font-size: 5.69px; font-family: &quot;Arial&quot;;" textlength="7.89px" lengthadjust="spacingAndGlyphs">2.0</text><polyline points="8.63,17.67 13.26,17.67 17.89,10.67 22.53,10.67 27.16,14.17 31.79,14.17 36.42,7.17 41.06,17.67 45.69,17.67 50.32,21.17 54.96,14.17 59.59,14.17 64.22,14.17 68.85,14.17 73.49,21.17 78.12,17.67 82.75,21.17 87.38,17.67 " style="stroke-width: 1.07; stroke-linecap: butt;"></polyline><circle cx="87.38" cy="17.67" r="0.89" style="stroke-width: 0.71; fill: #000000;"></circle><circle cx="50.32" cy="21.17" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="73.49" cy="21.17" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="82.75" cy="21.17" r="0.89" style="stroke-width: 0.71; stroke: #0000FF; fill: #0000FF;"></circle><circle cx="36.42" cy="7.17" r="0.89" style="stroke-width: 0.71; stroke: #FF0000; fill: #FF0000;"></circle></g></g>
 </svg></td>
 <td class="gt_row gt_right" headers="Avg_Wins_per_Tourney">2.56</td>
 </tr>
